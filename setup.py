@@ -3,7 +3,7 @@ from setuptools import setup
 from distutils.extension import Extension
 
 from motmot_utils import get_svnversion_persistent
-version_str = '0.2.dev%(svnversion)s'
+version_str = '0.4.dev%(svnversion)s'
 version = get_svnversion_persistent('FastImage_version.py',version_str)
 
 import FastImage_util
