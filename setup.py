@@ -17,7 +17,8 @@ ipp_extra_compile_args = vals.get('extra_compile_args',[])
 setup(name="FastImage",
       author="Andrew Straw",
       author_email="strawman@astraw.com",
-      description="Pythonic API for Intel IPP",
+      description="Pythonic API for a subset of the Intel "\
+      "Integrated Performance Primitives (Intel IPP) library",
       url='http://code.astraw.com/projects/motmot',
       license="BSD",
       version='0.5.0',
