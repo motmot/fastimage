@@ -25,6 +25,12 @@ def get_build_info(ipp_static=False,
             else:
                 ipp_root = '/opt/intel/ipp/5.1/ia32'
             ipp_define_macros = []
+        elif ipp_version == '5.2':
+            if machine == 'x86_64':
+                ipp_root = '/opt/intel/ipp/5.2/em64t'
+            else:
+                ipp_root = '/opt/intel/ipp/5.2/ia32'
+            ipp_define_macros = []
         else:
             raise NotImplementedError("no support for this version of IPP")
 
@@ -76,7 +82,7 @@ def get_build_info(ipp_static=False,
                              'ipps',
                              'ippcv',
                              'guide']
-            if ipp_version == '5.1':
+            if ipp_version == '5.1' or ipp_version == '5.2':
                 if machine == 'x86_64':
                     ipp_libraries = [lib+'em64t' for lib in ipp_libraries if lib != 'guide']
 
@@ -86,7 +92,7 @@ def get_build_info(ipp_static=False,
         vals['ipp_libraries'] = ipp_libraries
         vals['ipp_define_macros'] = ipp_define_macros
     elif sys.platform == 'darwin':
-        if 1:
+        if ipp_version == '5.1':
             vals['ipp_libraries'] = ['ippcore','ippi','ippcv']
             vals['ipp_include_dirs'] = ['/Library/Frameworks/Intel_IPP.framework/Versions/5.1/ia32/Headers']
             vals['ipp_library_dirs'] = ['/Library/Frameworks/Intel_IPP.framework/Versions/5.1/ia32/Libraries']
@@ -101,6 +107,8 @@ def get_build_info(ipp_static=False,
         elif 0:
             vals['extra_compile_args'] = ['-framework','Intel_IPP']
             vals['extra_link_args'] = ['-framework','Intel_IPP']
+        else:
+            NotImplementedError("No support for this version of Intel IPP (yet)")
     else:
         raise ValueError("unknown sys.platform")
 
