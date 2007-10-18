@@ -413,7 +413,10 @@ class TestFastImage32f(unittest.TestCase):
 
         imA %= fi.convert_to_32f(imB)
 
+def get_test_suite():
+    ts=unittest.TestSuite((unittest.makeSuite(TestFastImage8u),
+                           unittest.makeSuite(TestFastImage32f)))
+    return ts
+
 if __name__ == '__main__':
-##    ts=unittest.TestSuite((unittest.makeSuite(TestFastImage8u),
-##                           unittest.makeSuite(TestFastImage32f)))
     unittest.main()
