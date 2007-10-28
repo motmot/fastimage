@@ -21,9 +21,15 @@
 #endif
 
 void InitStaticIfNecessary() {
-#ifdef FASTIMAGE_USE_IPP_40
 #ifdef FASTIMAGE_STATICIPP
+#ifdef FASTIMAGE_USE_IPP_40
   InitStatic();
+#else
+  /* Tested with IPP 5.2 */
+  if ( ippStaticInit() < 0 ) {
+    fprintf( stderr, "Can't init IPP libraries (%s, %d). Exiting.\n",__FILE__,__LINE__);
+    exit(-1);
+  }
 #endif
 #endif
 }

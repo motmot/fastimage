@@ -93,6 +93,7 @@ def get_build_info(ipp_static=False,
         vals['ipp_define_macros'] = ipp_define_macros
     elif sys.platform == 'darwin':
         if ipp_version == '5.1':
+            assert not ipp_static # no implemented support for static build
             vals['ipp_libraries'] = ['ippcore','ippi','ippcv']
             vals['ipp_include_dirs'] = ['/Library/Frameworks/Intel_IPP.framework/Versions/5.1/ia32/Headers']
             vals['ipp_library_dirs'] = ['/Library/Frameworks/Intel_IPP.framework/Versions/5.1/ia32/Libraries']
@@ -104,11 +105,57 @@ def get_build_info(ipp_static=False,
             print
             print '*'*80
             print '*'*80
+        elif ipp_version == '5.2':
+            # static/shared ideas from IPP 5.2 ipp-samples/data-compression/Makefile.osx
+            # See also http://support.intel.com/support/performancetools/libraries/ipp/sb/CS-021491.htm
+            intel_arch = 'em64t'
+            #intel_arch = 'ia32'
+            IPPROOT='/Library/Frameworks/Intel_IPP.framework/Versions/5.2/%s'%(intel_arch,)
+            ipp_define_macros = []
+            ipp_extra_link_args = []
+            ipp_define_macros = []
+
+            #  like LDFLAGS in sample Makefile.osx
+            ipp_library_dirs = [ os.path.join(IPPROOT,'Libraries') ]
+            ipp_libraries = [#'ippcore',
+                'ippi',
+                'ipps',
+                'ippcv',
+                ]
+            LIB_ARCH=''
+            ARPOSTFIX='a'
+            LIBPREFIX='lib'
+            if ipp_static:
+                ipp_libraries_merged = [libname+'merged%s'%(LIB_ARCH,) for libname in ipp_libraries]
+                ipp_libraries_emerged = [libname+'emerged' for libname in ipp_libraries]
+                ipp_libraries = ipp_libraries_emerged + ipp_libraries_merged
+                ipp_extra_link_args.append(
+                    os.path.join( IPPROOT,'Libraries',LIBPREFIX+'ippcore'+LIB_ARCH+'.'+ARPOSTFIX))
+                ipp_define_macros.append(('FASTIMAGE_STATICIPP',None))
+            else:
+                ipp_libraries.append('ippcore')
+                ipp_libraries = [libname+'%s'%(LIB_ARCH,) for libname in ipp_libraries]
+                ipp_libraries.append('guide')
+
+            vals['extra_link_args'] = ipp_extra_link_args
+            vals['ipp_library_dirs'] = ipp_library_dirs
+            vals['ipp_libraries'] = ipp_libraries
+            vals['ipp_define_macros'] = ipp_define_macros
+            if not ipp_static:
+                print '*'*80
+                print '*'*80
+                print 'WARNING: due to brain-dead Intel IPP library issues, you must do the following:'
+                print
+                print 'export DYLD_LIBRARY_PATH="/Library/Frameworks/Intel_IPP.framework/Versions/5.2/%s/Libraries"'%(intel_arch,)
+                print
+                print '*'*80
+                print '*'*80
+                #raise NotImplementedError("Shared library build of FastImage for Intel IPP 5.2 broken")
         elif 0:
             vals['extra_compile_args'] = ['-framework','Intel_IPP']
             vals['extra_link_args'] = ['-framework','Intel_IPP']
         else:
-            NotImplementedError("No support for this version of Intel IPP (yet)")
+            raise NotImplementedError("No support for this version of Intel IPP (yet)")
     else:
         raise ValueError("unknown sys.platform")
 
