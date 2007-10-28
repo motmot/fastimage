@@ -3,8 +3,7 @@ from setuptools import setup
 from distutils.extension import Extension
 
 import FastImage_util
-vals = FastImage_util.get_build_info(ipp_static=True, # static build requires IPP license
-                                     ipp_version='5.2')
+vals = FastImage_util.get_build_info(ipp_static=True) # static build requires IPP license
 
 ipp_sources = vals.get('ipp_sources',[])
 ipp_include_dirs = vals.get('ipp_include_dirs',[])

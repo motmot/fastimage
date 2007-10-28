@@ -1,23 +1,28 @@
 import glob, os, sys
 
-class NotGiven: pass
-
 def get_build_info(ipp_static=False,
-                   ipp_version=NotGiven,
-                   machine=NotGiven,
-                   platform=NotGiven,
+                   ipp_version=None,
+                   ipp_arch=None,
                    system_install=True):
+    """get options to build Python extensions built with Intel IPP
 
+ipp_static - True to build static library, False to build shared library
+ipp_version - Version number of IPP to use (None uses default, '5.2' is one option)
+ipp_arch - Architecture of IPP to use (None uses default, 'em64t' and 'ia32' are options)
+system_install - (Linux only) True if IPP installed in /usr, False if in /opt
+"""
+
+    if ipp_version is None:
+        ipp_version = '5.2'
+    if ipp_arch is None:
+        if sys.platform.startswith('darwin'):
+            ipp_arch = 'em64t' # assume this is a recent Mac
+        else:
+            raise NotImplementedError("auto-architecture detection not implemented on this platform")
     vals = {}
     if sys.platform.startswith('linux'):
-        if ipp_version is NotGiven:
-            ipp_version = '5.1'
 
-        if machine is NotGiven:
-            machine = os.uname()[4]
-
-        if platform is NotGiven:
-            platform = sys.platform
+        machine = os.uname()[4]
 
         if ipp_version == '5.1':
             if machine == 'x86_64':
@@ -53,7 +58,7 @@ def get_build_info(ipp_static=False,
                      ('W7',None), # Pentium III
                      ('T7',None), # Pentium 4 (inc. Hyper-Threading)
                      ])
-                if platform.startswith('linux'):
+                if 1:
                     # XXX This seems required in IPP 4.0
                     # ippmerged.c. Probably now OK to remove this, but
                     # test first.
@@ -108,12 +113,10 @@ def get_build_info(ipp_static=False,
         elif ipp_version == '5.2':
             # static/shared ideas from IPP 5.2 ipp-samples/data-compression/Makefile.osx
             # See also http://support.intel.com/support/performancetools/libraries/ipp/sb/CS-021491.htm
-            intel_arch = 'em64t'
-            #intel_arch = 'ia32'
-            IPPROOT='/Library/Frameworks/Intel_IPP.framework/Versions/5.2/%s'%(intel_arch,)
+            IPPROOT='/Library/Frameworks/Intel_IPP.framework/Versions/5.2/%s'%(ipp_arch,)
             ipp_define_macros = []
             ipp_extra_link_args = []
-            ipp_define_macros = []
+            ipp_define_macros = [('FASTIMAGE_IPP_ARCH','"%s"'%ipp_arch)]
 
             #  like LDFLAGS in sample Makefile.osx
             ipp_library_dirs = [ os.path.join(IPPROOT,'Libraries') ]
@@ -146,7 +149,7 @@ def get_build_info(ipp_static=False,
                 print '*'*80
                 print 'WARNING: due to brain-dead Intel IPP library issues, you must do the following:'
                 print
-                print 'export DYLD_LIBRARY_PATH="/Library/Frameworks/Intel_IPP.framework/Versions/5.2/%s/Libraries"'%(intel_arch,)
+                print 'export DYLD_LIBRARY_PATH="/Library/Frameworks/Intel_IPP.framework/Versions/5.2/%s/Libraries"'%(ipp_arch,)
                 print
                 print '*'*80
                 print '*'*80
@@ -155,7 +158,7 @@ def get_build_info(ipp_static=False,
             vals['extra_compile_args'] = ['-framework','Intel_IPP']
             vals['extra_link_args'] = ['-framework','Intel_IPP']
         else:
-            raise NotImplementedError("No support for this version of Intel IPP (yet)")
+            raise NotImplementedError("No support for this version (%s) of Intel IPP (yet)"%ipp_version)
     else:
         raise ValueError("unknown sys.platform")
 

@@ -52,3 +52,28 @@ void InitStaticIfNecessary() {
     }
 */
 
+typedef struct {
+  int major;
+  int minor;
+  int build;
+} ipp_version_struct_t;
+
+ipp_version_struct_t GetIPPVersion() {
+  ipp_version_struct_t result;
+  result.major = IPP_VERSION_MAJOR;
+  result.minor = IPP_VERSION_MINOR;
+  result.build = IPP_VERSION_BUILD;
+  return result;
+}
+
+const char * GetIPPArch() {
+  return FASTIMAGE_IPP_ARCH;
+}
+
+const int IsIPPStatic() {
+#ifdef FASTIMAGE_STATICIPP
+  return 1;
+#else
+  return 0;
+#endif
+}
