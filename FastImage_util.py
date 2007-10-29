@@ -1,12 +1,12 @@
 import glob, os, sys
 
-def get_build_info(ipp_static=False,
+def get_build_info(ipp_static=True,  # static build requires static IPP libs
                    ipp_version=None,
                    ipp_arch=None,
                    system_install=True):
     """get options to build Python extensions built with Intel IPP
 
-ipp_static - True to build static library, False to build shared library
+ipp_static - True to build using static IPP library (requires IPP license)
 ipp_version - Version number of IPP to use (None uses default, '5.2' is one option)
 ipp_arch - Architecture of IPP to use (None uses default, 'em64t' and 'ia32' are options)
 system_install - (Linux only) True if IPP installed in /usr, False if in /opt
@@ -48,7 +48,10 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
         incdirname = 'Headers'
         IPPROOT='/Library/Frameworks/Intel_IPP.framework/Versions/%s/%s'%(ipp_version,ipp_arch)
     elif sys.platform.startswith('win'):
-        libdirname = 'lib'
+        if ipp_static:
+            libdirname = 'lib'
+        else:
+            libdirname = 'stublib'
         incdirname = 'include'
         IPPROOT=r'C:\Program Files\Intel\IPP\%s\%s'%(ipp_version,ipp_arch)
     else:
@@ -79,13 +82,8 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
     else:
         ipp_libraries.append('ippcore')
         ipp_libraries = [libname+'%s'%(LIB_ARCH,) for libname in ipp_libraries]
-        ipp_libraries.append('guide')
-
-    if sys.platform.startswith('win'):
-        # GCC compiler
-        #ipp_libraries.append('bufferoverflow')
-        pass
-        
+        if not sys.platform.startswith('win'):
+            ipp_libraries.append('guide')
     vals['extra_link_args'] = ipp_extra_link_args
     vals['ipp_library_dirs'] = ipp_library_dirs
     vals['ipp_libraries'] = ipp_libraries
