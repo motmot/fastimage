@@ -58,7 +58,10 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
         raise NotImplementedError("no build support implemented for this platform")
     ipp_define_macros = []
     ipp_extra_link_args = []
-    ipp_define_macros = [('FASTIMAGE_IPP_ARCH','\\"%s\\"'%ipp_arch)]
+    if sys.platform.startswith("linux"):
+        ipp_define_macros = [('FASTIMAGE_IPP_ARCH','"%s"'%ipp_arch)]
+    else:
+        ipp_define_macros = [('FASTIMAGE_IPP_ARCH','\\"%s\\"'%ipp_arch)]
     ipp_include_dirs = [os.path.join(IPPROOT,incdirname)]
 
     #  like LDFLAGS in sample Makefile.osx
