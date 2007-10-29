@@ -1,6 +1,6 @@
 import glob, os, sys
 
-def get_build_info(ipp_static=False,  # static build requires static IPP libs
+def get_build_info(ipp_static=True,  # static build requires static IPP libs
                    ipp_version=None,
                    ipp_arch=None,
                    system_install=True):
