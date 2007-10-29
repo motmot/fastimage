@@ -60,16 +60,10 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
         raise NotImplementedError("no build support implemented for this platform")
     ipp_define_macros = []
     ipp_extra_link_args = []
-    if ( sys.platform == 'darwin' or 
-         sys.platform.startswith("linux")):
-
-        # This condition works on my systems, but there must be a more
-        # direct way to know how shell escapes get passed to the
-        # compiler.
-
-        ipp_define_macros = [('FASTIMAGE_IPP_ARCH','"%s"'%ipp_arch)]
-    else:
+    if sys.platform.startswith('win'):
         ipp_define_macros = [('FASTIMAGE_IPP_ARCH','\\"%s\\"'%ipp_arch)]
+    else:
+        ipp_define_macros = [('FASTIMAGE_IPP_ARCH','"%s"'%ipp_arch)]
     ipp_include_dirs = [os.path.join(IPPROOT,incdirname)]
 
     #  like LDFLAGS in sample Makefile.osx
