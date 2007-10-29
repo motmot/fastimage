@@ -1,6 +1,6 @@
 import glob, os, sys
 
-def get_build_info(ipp_static=True,  # static build requires static IPP libs
+def get_build_info(ipp_static=False,  # static build requires static IPP libs
                    ipp_version=None,
                    ipp_arch=None,
                    system_install=True):
@@ -58,7 +58,10 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
         raise NotImplementedError("no build support implemented for this platform")
     ipp_define_macros = []
     ipp_extra_link_args = []
-    if sys.platform.startswith("linux"):
+    if sys.platform.startswith("linux") and machine != 'x86_64':
+        # This condition works on my systems, but there must be a more
+        # direct way to know how shell escapes get passed to the
+        # compiler.
         ipp_define_macros = [('FASTIMAGE_IPP_ARCH','"%s"'%ipp_arch)]
     else:
         ipp_define_macros = [('FASTIMAGE_IPP_ARCH','\\"%s\\"'%ipp_arch)]
