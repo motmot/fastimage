@@ -25,6 +25,8 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
                 ipp_arch = 'ia32'
             else:
                 raise ValueError("unexpected linux architecture: %s"%machine)
+        elif sys.platform == 'win32':
+            ipp_arch = 'ia32'
         else:
             raise NotImplementedError("auto-architecture detection not implemented on this platform")
             
@@ -36,26 +38,31 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
     # See also http://support.intel.com/support/performancetools/libraries/ipp/sb/CS-021491.htm
     if sys.platform.startswith('linux'):
         libdirname = 'lib'
+        incdirname = 'include'
         if system_install:
             IPPROOT = '/usr'
         else:
             IPPROOT = '/opt/intel/ipp/%s/%s'%(ipp_version,ipp_arch,)
     elif sys.platform == 'darwin':
         libdirname = 'Libraries'
+        incdirname = 'Headers'
         IPPROOT='/Library/Frameworks/Intel_IPP.framework/Versions/%s/%s'%(ipp_version,ipp_arch)
+    elif sys.platform.startswith('win'):
+        libdirname = 'lib'
+        incdirname = 'include'
+        IPPROOT=r'C:\Program Files\Intel\IPP\%s\%s'%(ipp_version,ipp_arch)
     else:
         raise NotImplementedError("no build support implemented for this platform")
     ipp_define_macros = []
     ipp_extra_link_args = []
     ipp_define_macros = [('FASTIMAGE_IPP_ARCH','"%s"'%ipp_arch)]
+    if sys.platform.startswith('win'):
+        ipp_define_macros = [('FASTIMAGE_IPP_ARCH','\\"%s\\"'%ipp_arch)]
+    ipp_include_dirs = [os.path.join(IPPROOT,incdirname)]
 
     #  like LDFLAGS in sample Makefile.osx
     ipp_library_dirs = [ os.path.join(IPPROOT,libdirname) ]
-    ipp_libraries = [#'ippcore',
-        'ippi',
-        'ipps',
-        'ippcv',
-        ]
+    ipp_libraries = ['ippi','ipps','ippcv']
     LIB_ARCH=''
     ARPOSTFIX='a'
     LIBPREFIX='lib'
@@ -63,18 +70,27 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
         ipp_libraries_merged = [libname+'merged%s'%(LIB_ARCH,) for libname in ipp_libraries]
         ipp_libraries_emerged = [libname+'emerged' for libname in ipp_libraries]
         ipp_libraries = ipp_libraries_emerged + ipp_libraries_merged
-        ipp_extra_link_args.append(
-            os.path.join( IPPROOT,libdirname,LIBPREFIX+'ippcore'+LIB_ARCH+'.'+ARPOSTFIX))
+        if sys.platform.startswith('win'):
+            ipp_libraries.append('ippcorel')
+        else:
+            ipp_extra_link_args.append(
+                os.path.join( IPPROOT,libdirname,LIBPREFIX+'ippcore'+LIB_ARCH+'.'+ARPOSTFIX))
         ipp_define_macros.append(('FASTIMAGE_STATICIPP',None))
     else:
         ipp_libraries.append('ippcore')
         ipp_libraries = [libname+'%s'%(LIB_ARCH,) for libname in ipp_libraries]
         ipp_libraries.append('guide')
 
+    if sys.platform.startswith('win'):
+        # GCC compiler
+        #ipp_libraries.append('bufferoverflow')
+        pass
+        
     vals['extra_link_args'] = ipp_extra_link_args
     vals['ipp_library_dirs'] = ipp_library_dirs
     vals['ipp_libraries'] = ipp_libraries
     vals['ipp_define_macros'] = ipp_define_macros
+    vals['ipp_include_dirs'] = ipp_include_dirs
     if sys.platform == 'darwin' and not ipp_static:
         print '*'*80
         print '*'*80
