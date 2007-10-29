@@ -65,11 +65,13 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
     ipp_library_dirs = [ os.path.join(IPPROOT,libdirname) ]
     ipp_libraries = ['ippi','ipps','ippcv']
     LIB_ARCH=''
+    if sys.platform.startswith('linux') and ipp_arch == 'em64t':
+        LIB_ARCH=ipp_arch
     ARPOSTFIX='a'
     LIBPREFIX='lib'
     if ipp_static:
         ipp_libraries_merged = [libname+'merged%s'%(LIB_ARCH,) for libname in ipp_libraries]
-        ipp_libraries_emerged = [libname+'emerged' for libname in ipp_libraries]
+        ipp_libraries_emerged = [libname+'emerged%s'%(LIB_ARCH,) for libname in ipp_libraries]
         ipp_libraries = ipp_libraries_emerged + ipp_libraries_merged
         if sys.platform.startswith('win'):
             ipp_libraries.append('ippcorel')
