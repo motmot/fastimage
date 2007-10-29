@@ -15,7 +15,8 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
     if ipp_version is None:
         ipp_version = '5.2'
 
-    machine = os.uname()[4]
+    if hasattr(os,'uname'):
+        machine = os.uname()[4]
 
     if ipp_arch is None:
         if sys.platform == 'darwin':
