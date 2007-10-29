@@ -14,11 +14,13 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
 
     if ipp_version is None:
         ipp_version = '5.2'
+
+    machine = os.uname()[4]
+
     if ipp_arch is None:
         if sys.platform == 'darwin':
             ipp_arch = 'em64t' # assume this is a recent Mac
         elif sys.platform.startswith('linux'):
-            machine = os.uname()[4]
             if machine == 'x86_64':
                 ipp_arch = 'em64t'
             elif machine in ['i386','i686']:
