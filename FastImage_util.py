@@ -85,6 +85,9 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
             ipp_extra_link_args.append(
                 os.path.join( IPPROOT,libdirname,LIBPREFIX+'ippcore'+LIB_ARCH+'.'+ARPOSTFIX))
         ipp_define_macros.append(('FASTIMAGE_STATICIPP',None))
+        if sys.platform.startswith("linux") and machine == 'x86_64':
+            # See http://softwarecommunity.intel.com/isn/Community/en-US/forums/thread/30233343.aspx
+            ipp_extra_link_args.append('--pic-executable')
     else:
         ipp_libraries.append('ippcore')
         ipp_libraries = [libname+'%s'%(LIB_ARCH,) for libname in ipp_libraries]
