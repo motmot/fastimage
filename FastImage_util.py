@@ -58,10 +58,13 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
         raise NotImplementedError("no build support implemented for this platform")
     ipp_define_macros = []
     ipp_extra_link_args = []
-    if sys.platform.startswith("linux") and machine != 'x86_64':
+    if ( sys.platform == 'darwin' or 
+        (sys.platform.startswith("linux") and machine != 'x86_64')):
+
         # This condition works on my systems, but there must be a more
         # direct way to know how shell escapes get passed to the
         # compiler.
+
         ipp_define_macros = [('FASTIMAGE_IPP_ARCH','"%s"'%ipp_arch)]
     else:
         ipp_define_macros = [('FASTIMAGE_IPP_ARCH','\\"%s\\"'%ipp_arch)]
