@@ -59,7 +59,7 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
     ipp_define_macros = []
     ipp_extra_link_args = []
     if ( sys.platform == 'darwin' or 
-        (sys.platform.startswith("linux") and machine != 'x86_64')):
+         sys.platform.startswith("linux")):
 
         # This condition works on my systems, but there must be a more
         # direct way to know how shell escapes get passed to the
