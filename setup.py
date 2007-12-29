@@ -1,5 +1,5 @@
 import glob, os
-from setuptools import setup
+from setuptools import setup, find_packages
 from distutils.extension import Extension
 
 import FastImage_util
@@ -12,8 +12,8 @@ ipp_libraries = vals.get('ipp_libraries',[])
 ipp_define_macros = vals.get('ipp_define_macros',[])
 ipp_extra_link_args = vals.get('extra_link_args',[])
 ipp_extra_compile_args = vals.get('extra_compile_args',[])
-    
-setup(name="FastImage",
+
+setup(name="motmot.FastImage",
       author="Andrew Straw",
       author_email="strawman@astraw.com",
       description="Pythonic API for a subset of the Intel "\
@@ -21,11 +21,9 @@ setup(name="FastImage",
       url='http://code.astraw.com/projects/motmot',
       license="BSD",
       version='0.5.2',
-      py_modules=['FastImage_version',
-                  'FastImage_util',
-                  'FastImage_tests',
-                  ],
-      ext_modules=[Extension(name="FastImage",
+      namespace_package=['motmot'],
+      packages = find_packages(),
+      ext_modules=[Extension(name="motmot.FastImage.FastImage",
                              sources=['src/FastImage.pyx']+ipp_sources,
                              include_dirs=ipp_include_dirs,
                              library_dirs=ipp_library_dirs,
@@ -37,4 +35,4 @@ setup(name="FastImage",
                    ],
       zip_safe = True,
       )
-      
+
