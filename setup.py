@@ -1,9 +1,11 @@
-import glob, os
-from setuptools import setup, find_packages
-from distutils.extension import Extension
+import os, sys
+from setuptools import setup, find_packages, Extension
 
-import FastImage_util
-vals = FastImage_util.get_build_info()
+# I need to import a module I'm about to install. How naughty is this?
+sys.path.insert(0, os.path.abspath(os.path.join('motmot','FastImage')))
+import util as FastImage_util
+
+vals = FastImage_util.get_build_info(ipp_static=False)
 
 ipp_sources = vals.get('ipp_sources',[])
 ipp_include_dirs = vals.get('ipp_include_dirs',[])
@@ -21,7 +23,7 @@ setup(name="motmot.FastImage",
       url='http://code.astraw.com/projects/motmot',
       license="BSD",
       version='0.5.2',
-      namespace_package=['motmot'],
+      namespace_packages=['motmot'],
       packages = find_packages(),
       ext_modules=[Extension(name="motmot.FastImage.FastImage",
                              sources=['src/FastImage.pyx']+ipp_sources,
