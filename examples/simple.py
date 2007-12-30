@@ -1,5 +1,5 @@
 from __future__ import division
-import FastImage
+import motmot.FastImage.FastImage as FastImage
 import numpy
 
 # Allocate FastImage8u buffers.

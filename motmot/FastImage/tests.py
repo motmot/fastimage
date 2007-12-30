@@ -22,14 +22,14 @@ class TestSize(unittest.TestCase):
         self.assert_(s1 == s2)
         self.assert_(s1 is not s2)
         self.assert_(s1 != s3)
-    
+
 class TestFastImageBase(unittest.TestCase):
     def setUp(self):
         self.fastimagefactories = [fi.FastImage8u,
                                    fi.FastImage32f]
         self.ar_dtypes = [nx.uint8,
                           nx.float32]
-        
+
     def test_roi(self):
         sz = fi.Size(20,10)
         for fif in self.fastimagefactories:
@@ -72,7 +72,7 @@ class TestFastImageBase(unittest.TestCase):
             imA.set_val(0,size)
             arA = nx.zeros((size.h, size.w),ar_dtype)
             self.assert_( nx.allclose(arA, nx.asarray(imA)))
-            
+
     def test_getitem(self):
         size = fi.Size(20,10)
         for fif in self.fastimagefactories:
@@ -95,10 +95,10 @@ class TestFastImage8u(unittest.TestCase):
 
     def test_32f_copy(self):
         sz = fi.Size(20,10)
-        
+
         imA=fi.FastImage8u(sz)
         imA.set_val(87,sz)
-        
+
         imB=fi.FastImage32f(sz)
         imA.get_32f_copy_put(imB,sz)
 
@@ -110,7 +110,7 @@ class TestFastImage8u(unittest.TestCase):
         A = 32
         B = 38
         sz = fi.Size(33,323)
-        
+
         imA=fi.FastImage8u(sz)
         imA.set_val(A,sz)
 
@@ -119,18 +119,18 @@ class TestFastImage8u(unittest.TestCase):
 
         imC=fi.FastImage8u(sz)
         imA.get_absdiff_put(imB,imC,sz)
-        
+
         arA = A*nx.ones((sz.h, sz.w),nx.int16)
         arB = B*nx.ones((sz.h, sz.w),nx.int16)
         arC = abs(arA - arB)
         self.assert_( nx.allclose(arC, nx.asarray(imC)))
-        
+
     def test_absdiff2(self):
 
         A = 32
         B = 38
         sz = fi.Size(656,491)
-        
+
         imA=fi.FastImage8u(sz)
         imA.set_val(A,sz)
 
@@ -139,28 +139,28 @@ class TestFastImage8u(unittest.TestCase):
 
         imC=fi.FastImage8u(sz)
         imA.get_absdiff_put(imB,imC,sz)
-        
+
         arA = A*nx.ones((sz.h, sz.w),nx.int16)
         arB = B*nx.ones((sz.h, sz.w),nx.int16)
         arC = abs(arA - arB)
         self.assert_( nx.allclose(arC, nx.asarray(imC)))
-        
+
     def test_sub(self):
 
         A = 32
         B = 38
         sz = fi.Size(656,491)
-        
+
         imA=fi.FastImage8u(sz)
         imA.set_val(A,sz)
 
         imB=fi.FastImage8u(sz)
         imB.set_val(B,sz)
 
-        imC=fi.FastImage8u(sz) 
+        imC=fi.FastImage8u(sz)
         imA.get_sub_put(imB,imC,sz) # imC = imA - imB
-        
-        imD=fi.FastImage8u(sz) 
+
+        imD=fi.FastImage8u(sz)
         imB.get_sub_put(imA,imD,sz) # imD = imB - im A
 
         # perform signed int math then clip to emulate
@@ -173,7 +173,7 @@ class TestFastImage8u(unittest.TestCase):
 
     def test_iconvert(self):
         sz = fi.Size(2,2)
-        
+
         imB=fi.FastImage32f(sz)
         imB.set_val(3.2,sz)
 
@@ -185,11 +185,11 @@ class TestFastImage8u(unittest.TestCase):
 
         self.assert_( nx.allclose(arA, nx.asarray(imA)))
         self.assert_( nx.allclose(arB, nx.asarray(imB)))
-        
+
 class TestFastImage32f(unittest.TestCase):
     def test_roi(self):
         sz = fi.Size(20,10)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(87,sz)
 
@@ -198,18 +198,18 @@ class TestFastImage32f(unittest.TestCase):
         onepix = fi.Size(1,1)
         imB=imA.roi(left,bottom,onepix)
         imB.set_val(12,onepix)
-        
+
         arA = 87*nx.ones((sz.h, sz.w),nx.float32)
         arA[bottom,left]=12
         self.assert_( nx.allclose(arA, nx.asarray(imA)))
-        
+
     def test_add_weighted_8u(self):
 
         A = 32.2
         B = 83
         alpha = 0.3
         sz = fi.Size(20,10)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(A,sz)
 
@@ -222,14 +222,14 @@ class TestFastImage32f(unittest.TestCase):
         arB = B*nx.ones((sz.h, sz.w),nx.uint8)
         arA = arA*(1.0-alpha) + arB*alpha
         self.assert_( nx.allclose(arA, nx.asarray(imA)))
-        
+
     def test_add_weighted_32f(self):
 
         A = 32.2
         B = 3854.2
         alpha = 0.3
         sz = fi.Size(33,33)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(A,sz)
 
@@ -246,7 +246,7 @@ class TestFastImage32f(unittest.TestCase):
     def test_squares(self):
         A = 32.2
         sz = fi.Size(5,5)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(A,sz)
         imA.toself_square(sz)
@@ -257,11 +257,11 @@ class TestFastImage32f(unittest.TestCase):
         arA=A*nx.ones((sz.h, sz.w),nx.float32)
         arC=(arA**8).astype(nx.float32)
         self.assert_( nx.allclose(arC, nx.asarray(imC)))
-        
+
     def test_sqrt(self):
         A = 32.2
         sz = fi.Size(5,245)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(A,sz)
         imA.toself_sqrt(sz)
@@ -275,7 +275,7 @@ class TestFastImage32f(unittest.TestCase):
         A = 32.2
         B = 82
         sz = fi.Size(63,33)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(A,sz)
 
@@ -293,7 +293,7 @@ class TestFastImage32f(unittest.TestCase):
         A = 32.2
         B = 3854.2
         sz = fi.Size(33,63)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(A,sz)
 
@@ -306,13 +306,13 @@ class TestFastImage32f(unittest.TestCase):
         arA = arA + arB
         self.assert_( nx.allclose(arA, nx.asarray(imA)))
 
-        
+
     def test_subtract1(self):
 
         A = 32.2
         B = 3854.2
         sz = fi.Size(33,323)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(A,sz)
 
@@ -320,18 +320,18 @@ class TestFastImage32f(unittest.TestCase):
         imB.set_val(B,sz)
 
         imA.toself_subtract(imB,sz)
-        
+
         arA = A*nx.ones((sz.h, sz.w),nx.float32)
         arB = B*nx.ones((sz.h, sz.w),nx.float32)
         arA = arA - arB
         self.assert_( nx.allclose(arA, nx.asarray(imA)))
-        
+
     def test_subtract2(self):
 
         A = 32.2
         B = 3854.2
         sz = fi.Size(33,323)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(A,sz)
 
@@ -339,7 +339,7 @@ class TestFastImage32f(unittest.TestCase):
         imB.set_val(B,sz)
 
         imC=imA.get_subtracted(imB,sz)
-        
+
         arA = A*nx.ones((sz.h, sz.w),nx.float32)
         arB = B*nx.ones((sz.h, sz.w),nx.float32)
         arC = arA - arB
@@ -350,7 +350,7 @@ class TestFastImage32f(unittest.TestCase):
         A = 32.2
         B = 3854.2
         sz = fi.Size(33,323)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(A,sz)
 
@@ -359,18 +359,18 @@ class TestFastImage32f(unittest.TestCase):
 
         imC=fi.FastImage32f(sz)
         imA.get_subtracted_put(imB,imC,sz)
-        
+
         arA = A*nx.ones((sz.h, sz.w),nx.float32)
         arB = B*nx.ones((sz.h, sz.w),nx.float32)
         arC = arA - arB
         self.assert_( nx.allclose(arC, nx.asarray(imC)))
-        
+
     def test_from_nx1(self):
 
         A = nx.array(32.2,nx.float32)
         sz = fi.Size(33,323)
         arA = nx.array(A,nx.float32)*nx.ones((sz.h, sz.w),nx.float32)
-        
+
         imA=fi.asfastimage(arA)
         arA[1,3:40] = 3024.03
 
@@ -381,7 +381,7 @@ class TestFastImage32f(unittest.TestCase):
         A = nx.array(32.2,nx.float32)
         sz = fi.Size(33,323)
         arA = nx.array(A,nx.float32)*nx.ones((sz.h, sz.w),nx.float32)
-        
+
         imA=fi.copy(arA)
         arA[1,3:40] = 3024.03
 
@@ -389,7 +389,7 @@ class TestFastImage32f(unittest.TestCase):
 
     def test_ipow(self):
         sz = fi.Size(2,2)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(2,sz)
 
@@ -400,10 +400,10 @@ class TestFastImage32f(unittest.TestCase):
         imA **= 0.5
         arA **= 0.5
         self.assert_( nx.allclose(arA, nx.asarray(imA)))
-        
+
     def test_iadd(self):
         sz = fi.Size(2,2)
-        
+
         imA=fi.FastImage32f(sz)
         imA.set_val(2,sz)
 
@@ -414,7 +414,7 @@ class TestFastImage32f(unittest.TestCase):
 
     def test_iconvert(self):
         sz = fi.Size(2,2)
-        
+
         imA=fi.FastImage32f(sz)
 
         imB=fi.FastImage8u(sz)

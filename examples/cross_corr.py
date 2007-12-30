@@ -1,5 +1,5 @@
 from __future__ import division
-import FastImage
+import motmot.FastImage.FastImage as FastImage
 import numpy
 
 # Allocate FastImage8u buffers.
@@ -90,7 +90,7 @@ for center_x, center_y in centers:
         print 'result32f'
         print numpy.asarray(result32f)
         print
-        
+
     if 1:
         # use preallocated memory (32 bit float)
         source.get_crosscorr_same_norm_put_32f(source.size,
@@ -100,7 +100,7 @@ for center_x, center_y in centers:
             print 'pre_alloc_result_32f'
             print numpy.asarray(pre_alloc_result_32f)
             print
-        
+
         max_val,x,y=pre_alloc_result_32f.max_index(result_size)
         print 'max_val,x,y',max_val,x,y
 

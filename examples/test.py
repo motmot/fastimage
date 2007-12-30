@@ -1,4 +1,4 @@
-import FastImage as fi
+import motmot.FastImage.FastImage as fi
 
 width = 10
 height = 10
