@@ -23,11 +23,11 @@ def set_debug(int val):
 
 cdef extern from "unistd.h":
     ctypedef unsigned long intptr_t
-    
+
 cdef extern from "limits.h":
     cdef intptr_t INT_MAX
     cdef intptr_t INT_MIN
-    
+
 cdef extern from "FastImage_macros.h":
     # for PyArrayInterface
     int CONTIGUOUS
@@ -50,7 +50,7 @@ cdef extern from "FastImage_macros.h":
         int major
         int minor
         int build
-    
+
     cdef ipp_version_struct_t GetIPPVersion()
     cdef char* GetIPPArch()
     cdef int IsIPPStatic()
@@ -80,7 +80,7 @@ class IppError(Exception):
 cdef void CHK_HAVEGIL( ipp.IppStatus errval ) except *:
     if (errval!=0):
         raise IppError(errval)
-    
+
 ctypedef struct PyArrayInterface:
     int two                       # contains the integer 2 as a sanity check
     int nd                        # number of dimensions
@@ -91,7 +91,7 @@ ctypedef struct PyArrayInterface:
     c_python.Py_intptr_t *strides # A length-nd array of stride information
     void *data                    # A pointer to the first element of the array
 
-cdef void free_array_interface( void* ptr, void *arr ):
+cdef void free_array_struct( void* ptr, void *arr ):
     arrpy = <object>arr
     c_python.Py_DECREF( arrpy )
     c_lib.free(ptr)
@@ -168,14 +168,14 @@ cdef class Point:
 cdef class FastImageBase:
     def __new__(self,*args,**kw):
         self.view = 1
-    
+
     def __init__(self, Size size):
         self.imsiz = size
-        
+
         # purely for making __array_struct__ without extra malloc:
         self.shape[0] = size.sz.height
         self.shape[1] = size.sz.width
-        
+
     def __dealloc__(self):
         global FASTIMAGEDEBUG
         if self.view==0:
@@ -186,7 +186,7 @@ cdef class FastImageBase:
     def show_mem_and_step(self):
         print self,'got mem %#x step %d'%(<intptr_t>self.im,
                                           self.step)
-            
+
     def stringview(self):
         cdef int i,j
         cdef fiptr rowptr
@@ -226,7 +226,7 @@ cdef class FastImageBase:
             nbytes_tot = nbytes_tot+nbytes
         c_python.Py_END_ALLOW_THREADS
         return nbytes_tot
-            
+
     property __array_struct__:
         def __get__(self):
             cdef PyArrayInterface* inter
@@ -244,8 +244,22 @@ cdef class FastImageBase:
             inter.shape = self.shape
             inter.data = self.im
             c_python.Py_INCREF(self)
-            obj = c_python.PyCObject_FromVoidPtrAndDesc( <void*>inter, <void*>self, free_array_interface)
+            obj = c_python.PyCObject_FromVoidPtrAndDesc( <void*>inter, <void*>self, free_array_struct)
             return obj
+
+    property __array_interface__:
+        def __get__(self):
+            inter = {}
+            inter['shape'] = self.shape[0], self.shape[1]
+            inter['strides'] = self.strides[0], self.strides[1]
+            if self.basetype == '8u':
+                inter['typestr'] = '|u1'
+            else:
+                raise NotImplementedError('')
+            readonly = True
+            data_ptr_int = <intptr_t>self.im
+            inter['data'] = (data_ptr_int,readonly)
+            return inter
 
     property size:
         def __get__(self):
@@ -272,7 +286,7 @@ cdef class FastImageBase:
                                                           left,bottom)
         result.source_data = self # keep reference to original image in case it goes out of scope elsewhere
         return result
-    
+
     def roi( self, int left, int bottom, Size size):
         # python version of C version
         return self.c_roi(left,bottom,size)
@@ -280,7 +294,7 @@ cdef class FastImageBase:
     def __getitem__(self,a):
         cdef int i,j
         cdef fiptr valptr
-        
+
         i,j = a # a must be sequence of ints
 
         valptr = (self.im+i*self.step)+j*self.strides[1]
@@ -289,21 +303,21 @@ cdef class FastImageBase:
             return (<ipp.Ipp8u*>valptr)[0]
         elif self.basetype == '32f':
             return (<ipp.Ipp32f*>valptr)[0]
-            
+
 ##    def __getitem__(self,*args,**kw):
 ##        print '*args',args
 ##        print '**kw',kw
-    
+
 cdef class FastImage32f(FastImageBase) # forward declaration
 cdef class FastImage8u(FastImageBase):
 
     def __new__(self,*args,**kw):
         self.strides[1] = 1
         self.basetype = '8u'
-        
+
     def __init__(self, Size size ):
         global FASTIMAGEDEBUG
-        
+
         FastImageBase.__init__(self, size)
         if FASTIMAGEDEBUG>=1:
             print self,'requesting memory (size W:%d H:%d)'%(self.imsiz.sz.width,
@@ -324,7 +338,7 @@ cdef class FastImage8u(FastImageBase):
     def histogram(self):
         cdef PyArrayInterface* inter
         cdef ipp.IppStatus sts
-        
+
         hist = numpy.empty((256,),dtype=numpy.int32)
         cobj = hist.__array_struct__
 
@@ -342,7 +356,7 @@ cdef class FastImage8u(FastImageBase):
 
     def set_val(self, int val, Size size):
         CHK_HAVEGIL( ipp.ippiSet_8u_C1R( val, <ipp.Ipp8u*>self.im, self.step, size.sz ))
-        
+
     def set_val_masked(self, int val, FastImage8u mask, Size size):
         CHK_HAVEGIL( ipp.ippiSet_8u_C1MR( val, <ipp.Ipp8u*>self.im, self.step, size.sz,
                                           <ipp.Ipp8u*>mask.im, mask.step))
@@ -358,7 +372,7 @@ cdef class FastImage8u(FastImageBase):
                                                <ipp.Ipp32f*>result.im, result.step,
                                                size.sz ))
         return result
-    
+
     def get_32f_copy_put(self,FastImage32f result,Size size):
         CHK_HAVEGIL( ipp.ippiConvert_8u32f_C1R(<ipp.Ipp8u*>self.im, self.step,
                                                <ipp.Ipp32f*>result.im, result.step,
@@ -376,7 +390,7 @@ cdef class FastImage8u(FastImageBase):
                                          <ipp.Ipp8u*>result.im, result.step,
                                          size.sz ))
         return result
-        
+
     def get_8u_copy_put(self,FastImage8u result,Size size):
         CHK_HAVEGIL( ipp.ippiCopy_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
                                          <ipp.Ipp8u*>result.im, result.step,
@@ -390,7 +404,7 @@ cdef class FastImage8u(FastImageBase):
         result has same dimensions as self
         result is normalized"""
         cdef ipp.IppStatus sts
-        
+
         c_python.Py_BEGIN_ALLOW_THREADS # release GIL
         sts = ipp.ippiCrossCorrSame_Norm_8u32f_C1R( <ipp.Ipp8u*>self.im, self.step,
                                                     source_size.sz,
@@ -399,7 +413,7 @@ cdef class FastImage8u(FastImageBase):
                                                     <ipp.Ipp32f*>result.im, result.step)
         c_python.Py_END_ALLOW_THREADS # release GIL
         CHK_HAVEGIL(sts)
-    
+
     def get_crosscorr_same_norm_32f( self, Size source_size,
                                      FastImage8u other, Size other_size,
                                      int scale_factor ):
@@ -421,7 +435,7 @@ cdef class FastImage8u(FastImageBase):
         result has same dimensions as self
         result is normalized"""
         cdef ipp.IppStatus sts
-        
+
         c_python.Py_BEGIN_ALLOW_THREADS # release GIL
         sts = ipp.ippiCrossCorrSame_Norm_8u_C1RSfs( <ipp.Ipp8u*>self.im, self.step,
                                                     source_size.sz,
@@ -431,7 +445,7 @@ cdef class FastImage8u(FastImageBase):
                                                     scale_factor )
         c_python.Py_END_ALLOW_THREADS # release GIL
         CHK_HAVEGIL(sts)
-    
+
     def get_crosscorr_same_norm_scaled_8u( self, Size source_size,
                                            FastImage8u other, Size other_size,
                                            int scale_factor ):
@@ -457,7 +471,7 @@ cdef class FastImage8u(FastImageBase):
                                           <ipp.Ipp8u*>self.im,self.step,
                                           <ipp.Ipp8u*>result.im,result.step,
                                           size.sz))
-        
+
     def get_sub_put(self, FastImage8u other, FastImage8u result, Size size):
         """result = self - other"""
         CHK_HAVEGIL( ipp.ippiSub_8u_C1RSfs(<ipp.Ipp8u*>other.im, other.step,
@@ -483,7 +497,7 @@ cdef class FastImage8u(FastImageBase):
         result = FastImage8u(size)
         self.get_compare_put(other, result, size, op)
         return result
-        
+
     def get_compare_put( self, other, FastImage8u dest, Size size, int op ):
         cdef FastImage8u other8u
         cdef int other_int
@@ -508,7 +522,7 @@ cdef class FastImage8u(FastImageBase):
                                             <ipp.Ipp8u*>dest.im,dest.step,
                                             size.sz,
                                             ipp.ippCmpGreater))
-            
+
     def __imod__(self, object other):
         cdef FastImage32f other32f
         cdef convert_to_8u convert_to_8u_op
@@ -520,12 +534,12 @@ cdef class FastImage8u(FastImageBase):
         else:
             raise TypeError('cannot mod type in-place')
         return self
-    
+
     def min_index(self, Size size):
         cdef ipp.IppStatus sts
         cdef int index_x, index_y
         cdef ipp.Ipp8u min_val
-        
+
         c_python.Py_BEGIN_ALLOW_THREADS # release GIL
         sts = ipp.ippiMinIndx_8u_C1R(
             <ipp.Ipp8u*>self.im,self.step,
@@ -538,7 +552,7 @@ cdef class FastImage8u(FastImageBase):
         cdef ipp.IppStatus sts
         cdef int index_x, index_y
         cdef ipp.Ipp8u max_val
-        
+
         c_python.Py_BEGIN_ALLOW_THREADS # release GIL
         sts = ipp.ippiMaxIndx_8u_C1R(
             <ipp.Ipp8u*>self.im,self.step,
@@ -552,10 +566,10 @@ cdef class FastImage32f(FastImageBase):
     def __new__(self,*args,**kw):
         self.strides[1] = 4
         self.basetype = '32f'
-        
+
     def __init__(self, Size size ):
         global FASTIMAGEDEBUG
-        
+
         FastImageBase.__init__(self, size)
         if FASTIMAGEDEBUG>=1:
             print self,'requesting 32f memory (size W:%d H:%d)'%(self.imsiz.sz.width,
@@ -582,7 +596,7 @@ cdef class FastImage32f(FastImageBase):
                                                size.sz))
         else:
             raise ValueError("type not supported")
-        
+
     def toself_add_weighted(self, FastImageBase other, Size size, float alpha):
         """self = self*(1-alpha) + alpha*other"""
         if isinstance(other,FastImage8u):
@@ -605,8 +619,8 @@ cdef class FastImage32f(FastImageBase):
         CHK_HAVEGIL( ipp.ippiAddWeighted_32f_C1IR( <ipp.Ipp32f*>other.im, other.step,
                                                    <ipp.Ipp32f*>self.im, self.step,
                                                    size.sz, alpha))
-        
-        
+
+
     def toself_add_square(self, FastImage8u other, Size size):
         """self += other**2"""
         CHK_HAVEGIL( ipp.ippiAddSquare_8u32f_C1IR( <ipp.Ipp8u*>other.im, other.step,
@@ -617,7 +631,7 @@ cdef class FastImage32f(FastImageBase):
         CHK_HAVEGIL( ipp.ippiSqr_32f_C1R( <ipp.Ipp32f*>self.im, self.step,
                                           <ipp.Ipp32f*>result.im, result.step,
                                           size.sz))
-        
+
     cdef void fast_get_square_put(self, FastImage32f result, Size size):
         CHK_HAVEGIL( ipp.ippiSqr_32f_C1R( <ipp.Ipp32f*>self.im, self.step,
                                         <ipp.Ipp32f*>result.im, result.step,
@@ -653,21 +667,21 @@ cdef class FastImage32f(FastImageBase):
                                           <ipp.Ipp32f*>result.im, result.step,
                                           size.sz))
         return result
-        
+
     def get_subtracted_put(self,FastImage32f other,FastImage32f result,Size size):
         """result = self - other"""
         CHK_HAVEGIL( ipp.ippiSub_32f_C1R(<ipp.Ipp32f*>other.im, other.step,
                                           <ipp.Ipp32f*>self.im, self.step,
                                           <ipp.Ipp32f*>result.im, result.step,
                                           size.sz))
-        
+
     cdef void fast_get_subtracted_put(self,FastImage32f other,FastImage32f result,Size size):
         """result = self - other"""
         CHK_HAVEGIL( ipp.ippiSub_32f_C1R(<ipp.Ipp32f*>other.im, other.step,
                                           <ipp.Ipp32f*>self.im, self.step,
                                           <ipp.Ipp32f*>result.im, result.step,
                                           size.sz))
-        
+
     def toself_subtract(self,FastImage32f other,Size size):
         """self = self - other"""
         CHK_HAVEGIL( ipp.ippiSub_32f_C1IR(<ipp.Ipp32f*>other.im, other.step,
@@ -708,7 +722,7 @@ cdef class FastImage32f(FastImageBase):
         "other = self * C"
         CHK_HAVEGIL( ipp.ippiMulC_32f_C1R(<ipp.Ipp32f*>self.im, self.step,  value,
                                           <ipp.Ipp32f*>other.im,other.step, size.sz))
-        
+
     def __ipow__(x,y,z):
         cdef FastImage32f xself
         xself = x
@@ -733,7 +747,7 @@ cdef class FastImage32f(FastImageBase):
         else:
             raise TypeError('cannot add type in-place')
         return self
-    
+
     def __imod__(self, object other):
         cdef FastImage8u other8u
         cdef blend_with blend_width_op
@@ -756,7 +770,7 @@ cdef class FastImage32f(FastImageBase):
         cdef ipp.IppStatus sts
         cdef int index_x, index_y
         cdef ipp.Ipp32f max_val
-        
+
         c_python.Py_BEGIN_ALLOW_THREADS # release GIL
         sts = ipp.ippiMaxIndx_32f_C1R(
             <ipp.Ipp32f*>self.im,self.step,
@@ -764,18 +778,18 @@ cdef class FastImage32f(FastImageBase):
         c_python.Py_END_ALLOW_THREADS # release GIL
         CHK_HAVEGIL(sts)
         return max_val, index_x, index_y
-    
+
 def asfastimage( object arr ):
     """return a FastImage view of an array"""
     cdef PyArrayInterface* inter
     cdef FastImageBase result
-    
+
     global FASTIMAGEDEBUG
 
     attr = arr.__array_struct__
     if not c_python.PyCObject_Check(attr):
         raise ValueError("invalid __array_struct__")
-    
+
     inter = <PyArrayInterface*>c_python.PyCObject_AsVoidPtr(attr)
     if inter.two != 2:
         raise ValueError("invalid __array_struct__")
@@ -787,7 +801,7 @@ def asfastimage( object arr ):
     # this is OK:
     if (inter.flags & (ALIGNED | WRITEABLE)) != (ALIGNED | WRITEABLE):
         raise ValueError("cannot handle misaligned or not writeable arrays.")
-    
+
     if inter.nd != 2:
         raise ValueError("only 2D arrays may be viewed as a FastImage")
 
@@ -807,13 +821,13 @@ def asfastimage( object arr ):
     result.strides[0] = inter.strides[0]
     result.step = inter.strides[0]
     result.im = inter.data
-    
+
     result.source_data = arr # keep reference to original image in case it goes out of scope elsewhere
 
     if FASTIMAGEDEBUG>=2:
         print '  result',result
         print '    result.view',result.view
-    
+
     return result
 
 def copy( object arr ):
@@ -825,7 +839,7 @@ def copy( object arr ):
     attr = arr.__array_struct__
     if not c_python.PyCObject_Check(attr):
         raise ValueError("invalid __array_struct__")
-    
+
     inter = <PyArrayInterface*>c_python.PyCObject_AsVoidPtr(attr)
     if inter.two != 2:
         raise ValueError("invalid __array_struct__")
@@ -837,13 +851,13 @@ def copy( object arr ):
     # this is OK:
     if (inter.flags & (ALIGNED)) != (ALIGNED):
         raise ValueError("cannot handle misaligned arrays.")
-    
+
     if inter.nd != 2:
         raise ValueError("only 2D arrays may be copied to a FastImage")
-    
+
     if (inter.shape[0] > INT_MAX) or (inter.shape[1] > INT_MAX) or (inter.strides[0] > INT_MAX):
         raise ValueError("cannot handle such large data")
-    
+
     if inter.typekind == "u"[0] and inter.itemsize==1:
         result = FastImage8u(Size(inter.shape[1],inter.shape[0])) # allocate memory
     elif inter.typekind == "f"[0] and inter.itemsize==4:
@@ -856,7 +870,7 @@ def copy( object arr ):
         c_lib.memcpy( result.im + i*result.step,
                       inter.data + i*inter.strides[0],
                       inter.shape[1]*result.strides[1] )
-        
+
     return result
 
 # Some experimental lazy operators to support fast arithmetic using
@@ -866,7 +880,7 @@ cdef class LazyOp:
     pass
 
 ##############################
-        
+
 cdef class square(LazyOp):
     def __init__(self, FastImageBase base):
         self.base = base
@@ -887,11 +901,11 @@ cdef class blend_with(LazyOp):
     def __init__(self, FastImage8u other8u, float alpha):
         self.other8u = other8u
         self.alpha = alpha
-        
+
 cdef class convert_to_8u(LazyOp):
     def __init__(self, FastImage32f orig32f):
         self.orig32f = orig32f
-        
+
 cdef class convert_to_32f(LazyOp):
     def __init__(self, FastImage8u orig8u):
         self.orig8u = orig8u
