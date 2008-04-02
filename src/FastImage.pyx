@@ -210,19 +210,19 @@ cdef class FastImageBase:
         cdef int i
         cdef int nbytes
         cdef int nbytes_tot
+        cdef int bytes_per_pixel
         cdef fiptr rowptr
         cdef fiptr valptr
         cdef c_lib.FILE* fd
-
         nbytes_tot = 0
+        bytes_per_pixel = self.strides[1]
         if not c_python.PyFile_Check(fobj):
             raise ValueError('need file object')
         fd = c_python.PyFile_AsFile(fobj)
-
         c_python.Py_BEGIN_ALLOW_THREADS
         for i from 0 <= i < self.imsiz.sz.height:
             rowptr = self.im+i*self.step
-            nbytes = c_lib.fwrite( rowptr, 1, self.imsiz.sz.width, fd )
+            nbytes = c_lib.fwrite( rowptr, 1, self.imsiz.sz.width*bytes_per_pixel, fd )
             nbytes_tot = nbytes_tot+nbytes
         c_python.Py_END_ALLOW_THREADS
         return nbytes_tot
