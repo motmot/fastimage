@@ -10,7 +10,7 @@ import numpy
 cdef int FASTIMAGEDEBUG
 FASTIMAGEDEBUG = 0
 
-# for computing histogrames
+# for computing histograms
 cdef int n_hist_levels
 n_hist_levels = 256
 cdef ipp.Ipp32s hist_levels[257]
@@ -135,7 +135,7 @@ cdef class Size:
             return self.sz.width
 
 cdef class Point:
-    # keep this read-only to prevent bizarre problems if multiple image share same size
+    # keep this read-only to prevent bizarre problems if multiple image share same origin
     def __init__(self,int x,int y):
         self.pt.x = x
         self.pt.y = y
