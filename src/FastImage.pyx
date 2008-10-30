@@ -166,7 +166,7 @@ cdef class Point:
             return self.pt.y
 
 cdef class FastImageBase:
-    def __new__(self,*args,**kw):
+    def __cinit__(self,*args,**kw):
         self.view = 1
 
     def __init__(self, Size size):
@@ -311,7 +311,7 @@ cdef class FastImageBase:
 cdef class FastImage32f(FastImageBase) # forward declaration
 cdef class FastImage8u(FastImageBase):
 
-    def __new__(self,*args,**kw):
+    def __cinit__(self,*args,**kw):
         self.strides[1] = 1
         self.basetype = '8u'
 
@@ -563,7 +563,7 @@ cdef class FastImage8u(FastImageBase):
 
 cdef class FastImage32f(FastImageBase):
 
-    def __new__(self,*args,**kw):
+    def __cinit__(self,*args,**kw):
         self.strides[1] = 4
         self.basetype = '32f'
 
