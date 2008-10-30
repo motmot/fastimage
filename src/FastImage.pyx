@@ -720,7 +720,7 @@ cdef class FastImage32f(FastImageBase):
 
     def get_multiply_put(self, float val, FastImage32f other, Size size):
         "other = self * C"
-        CHK_HAVEGIL( ipp.ippiMulC_32f_C1R(<ipp.Ipp32f*>self.im, self.step,  value,
+        CHK_HAVEGIL( ipp.ippiMulC_32f_C1R(<ipp.Ipp32f*>self.im, self.step,  val,
                                           <ipp.Ipp32f*>other.im,other.step, size.sz))
 
     def __ipow__(x,y,z):
@@ -829,6 +829,14 @@ def asfastimage( object arr ):
         print '    result.view',result.view
 
     return result
+
+def cython_is_broken():
+
+    # This will break cython compilation but not pyrex. That's what we
+    # want, since the function (asfastimage) above works with Pyrex
+    # 0.9.5.1a and 0.9.6.4 but not Cython 9.8.1.1.
+
+    blech
 
 def copy( object arr ):
     """return a FastImage copy of an array"""
