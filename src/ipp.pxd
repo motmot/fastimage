@@ -9,207 +9,207 @@
 #cdef extern from "ippdefs.h":
 cdef extern from "fi_ipp.h":
     ctypedef enum IppStatus:
-        ippStsNotSupportedModeErr 
-        ippStsCpuNotSupportedErr  
+        ippStsNotSupportedModeErr
+        ippStsCpuNotSupportedErr
 
-        ippStsEphemeralKeyErr     
-        ippStsMessageErr          
-        ippStsShareKeyErr         
-        ippStsIvalidPublicKey     
-        ippStsIvalidPrivateKey    
-        ippStsOutOfECErr          
-        ippStsECCInvalidFlagErr   
+        ippStsEphemeralKeyErr
+        ippStsMessageErr
+        ippStsShareKeyErr
+        ippStsIvalidPublicKey
+        ippStsIvalidPrivateKey
+        ippStsOutOfECErr
+        ippStsECCInvalidFlagErr
 
-        ippStsMP3FrameHeaderErr   
-        ippStsMP3SideInfoErr      
+        ippStsMP3FrameHeaderErr
+        ippStsMP3SideInfoErr
 
-        ippStsBlockStepErr        
-        ippStsMBStepErr           
+        ippStsBlockStepErr
+        ippStsMBStepErr
 
-        ippStsAacPrgNumErr        
-        ippStsAacSectCbErr        
-        ippStsAacSfValErr         
-        ippStsAacCoefValErr       
-        ippStsAacMaxSfbErr        
-        ippStsAacPredSfbErr       
-        ippStsAacPlsDataErr       
-        ippStsAacGainCtrErr       
-        ippStsAacSectErr          
-        ippStsAacTnsNumFiltErr    
-        ippStsAacTnsLenErr        
-        ippStsAacTnsOrderErr      
-        ippStsAacTnsCoefResErr    
-        ippStsAacTnsCoefErr       
-        ippStsAacTnsDirectErr     
-        ippStsAacTnsProfileErr    
-        ippStsAacErr              
-        ippStsAacBitOffsetErr     
-        ippStsAacAdtsSyncWordErr  
-        ippStsAacSmplRateIdxErr   
-        ippStsAacWinLenErr        
-        ippStsAacWinGrpErr        
-        ippStsAacWinSeqErr        
-        ippStsAacComWinErr        
-        ippStsAacStereoMaskErr    
-        ippStsAacChanErr          
-        ippStsAacMonoStereoErr    
-        ippStsAacStereoLayerErr   
-        ippStsAacMonoLayerErr     
-        ippStsAacScalableErr      
-        ippStsAacObjTypeErr       
-        ippStsAacWinShapeErr      
-        ippStsAacPcmModeErr       
-        ippStsVLCUsrTblHeaderErr  
+        ippStsAacPrgNumErr
+        ippStsAacSectCbErr
+        ippStsAacSfValErr
+        ippStsAacCoefValErr
+        ippStsAacMaxSfbErr
+        ippStsAacPredSfbErr
+        ippStsAacPlsDataErr
+        ippStsAacGainCtrErr
+        ippStsAacSectErr
+        ippStsAacTnsNumFiltErr
+        ippStsAacTnsLenErr
+        ippStsAacTnsOrderErr
+        ippStsAacTnsCoefResErr
+        ippStsAacTnsCoefErr
+        ippStsAacTnsDirectErr
+        ippStsAacTnsProfileErr
+        ippStsAacErr
+        ippStsAacBitOffsetErr
+        ippStsAacAdtsSyncWordErr
+        ippStsAacSmplRateIdxErr
+        ippStsAacWinLenErr
+        ippStsAacWinGrpErr
+        ippStsAacWinSeqErr
+        ippStsAacComWinErr
+        ippStsAacStereoMaskErr
+        ippStsAacChanErr
+        ippStsAacMonoStereoErr
+        ippStsAacStereoLayerErr
+        ippStsAacMonoLayerErr
+        ippStsAacScalableErr
+        ippStsAacObjTypeErr
+        ippStsAacWinShapeErr
+        ippStsAacPcmModeErr
+        ippStsVLCUsrTblHeaderErr
         ippStsVLCUsrTblUnsupportedFmtErr
-        ippStsVLCUsrTblEscAlgTypeErr    
-        ippStsVLCUsrTblEscCodeLengthErr 
-        ippStsVLCUsrTblCodeLengthErr    
-        ippStsVLCInternalTblErr         
-        ippStsVLCInputDataErr           
-        ippStsVLCAACEscCodeLengthErr    
-        ippStsNoiseRangeErr         
-        ippStsUnderRunErr           
-        ippStsPaddingErr            
-        ippStsCFBSizeErr            
-        ippStsPaddingSchemeErr      
-        ippStsInvalidCryptoKeyErr   
-        ippStsLengthErr             
-        ippStsBadModulusErr         
-        ippStsLPCCalcErr            
-        ippStsRCCalcErr             
-        ippStsIncorrectLSPErr       
-        ippStsNoRootFoundErr        
-        ippStsJPEG2KBadPassNumber   
+        ippStsVLCUsrTblEscAlgTypeErr
+        ippStsVLCUsrTblEscCodeLengthErr
+        ippStsVLCUsrTblCodeLengthErr
+        ippStsVLCInternalTblErr
+        ippStsVLCInputDataErr
+        ippStsVLCAACEscCodeLengthErr
+        ippStsNoiseRangeErr
+        ippStsUnderRunErr
+        ippStsPaddingErr
+        ippStsCFBSizeErr
+        ippStsPaddingSchemeErr
+        ippStsInvalidCryptoKeyErr
+        ippStsLengthErr
+        ippStsBadModulusErr
+        ippStsLPCCalcErr
+        ippStsRCCalcErr
+        ippStsIncorrectLSPErr
+        ippStsNoRootFoundErr
+        ippStsJPEG2KBadPassNumber
         ippStsJPEG2KDamagedCodeBlock
-        ippStsH263CBPYCodeErr       
-        ippStsH263MCBPCInterCodeErr 
-        ippStsH263MCBPCIntraCodeErr 
-        ippStsNotEvenStepErr        
-        ippStsHistoNofLevelsErr     
-        ippStsLUTNofLevelsErr       
-        ippStsMP4BitOffsetErr       
-        ippStsMP4QPErr              
-        ippStsMP4BlockIdxErr        
-        ippStsMP4BlockTypeErr       
-        ippStsMP4MVCodeErr          
-        ippStsMP4VLCCodeErr         
-        ippStsMP4DCCodeErr          
-        ippStsMP4FcodeErr           
-        ippStsMP4AlignErr           
-        ippStsMP4TempDiffErr        
-        ippStsMP4BlockSizeErr       
-        ippStsMP4ZeroBABErr         
-        ippStsMP4PredDirErr         
-        ippStsMP4BitsPerPixelErr    
-        ippStsMP4VideoCompModeErr   
-        ippStsMP4LinearModeErr      
-        ippStsH263PredModeErr       
-        ippStsH263BlockStepErr      
-        ippStsH263MBStepErr         
-        ippStsH263FrameWidthErr     
-        ippStsH263FrameHeightErr    
-        ippStsH263ExpandPelsErr     
-        ippStsH263PlaneStepErr      
-        ippStsH263QuantErr          
-        ippStsH263MVCodeErr         
-        ippStsH263VLCCodeErr        
-        ippStsH263DCCodeErr         
-        ippStsH263ZigzagLenErr      
-        ippStsFBankFreqErr          
-        ippStsFBankFlagErr          
-        ippStsFBankErr              
-        ippStsNegOccErr             
-        ippStsCdbkFlagErr           
-        ippStsSVDCnvgErr            
-        ippStsJPEGHuffTableErr      
-        ippStsJPEGDCTRangeErr       
-        ippStsJPEGOutOfBufErr       
-        ippStsDrawTextErr           
-        ippStsChannelOrderErr       
-        ippStsZeroMaskValuesErr     
-        ippStsQuadErr               
-        ippStsRectErr               
-        ippStsCoeffErr              
-        ippStsNoiseValErr           
-        ippStsDitherLevelsErr       
-        ippStsNumChannelsErr        
-        ippStsCOIErr                
-        ippStsDivisorErr            
-        ippStsAlphaTypeErr          
-        ippStsGammaRangeErr         
-        ippStsGrayCoefSumErr        
-        ippStsChannelErr            
-        ippStsToneMagnErr           
-        ippStsToneFreqErr           
-        ippStsTonePhaseErr          
-        ippStsTrnglMagnErr          
-        ippStsTrnglFreqErr          
-        ippStsTrnglPhaseErr         
-        ippStsTrnglAsymErr          
-        ippStsHugeWinErr            
-        ippStsJaehneErr             
-        ippStsStrideErr             
-        ippStsEpsValErr             
-        ippStsWtOffsetErr           
-        ippStsAnchorErr             
-        ippStsMaskSizeErr           
-        ippStsShiftErr              
-        ippStsSampleFactorErr       
-        ippStsSamplePhaseErr        
-        ippStsFIRMRFactorErr        
-        ippStsFIRMRPhaseErr          
-        ippStsRelFreqErr            
-        ippStsFIRLenErr             
-        ippStsIIROrderErr           
-        ippStsDlyLineIndexErr       
-        ippStsResizeFactorErr       
-        ippStsInterpolationErr      
-        ippStsMirrorFlipErr         
-        ippStsMoment00ZeroErr       
-        ippStsThreshNegLevelErr     
-        ippStsThresholdErr          
-        ippStsContextMatchErr       
-        ippStsFftFlagErr            
-        ippStsFftOrderErr           
-        ippStsStepErr               
-        ippStsScaleRangeErr         
-        ippStsDataTypeErr           
-        ippStsOutOfRangeErr         
-        ippStsDivByZeroErr          
-        ippStsMemAllocErr           
-        ippStsNullPtrErr            
-        ippStsRangeErr              
-        ippStsSizeErr               
-        ippStsBadArgErr             
-        ippStsNoMemErr              
-        ippStsSAReservedErr3        
-        ippStsErr                   
-        ippStsSAReservedErr1        
+        ippStsH263CBPYCodeErr
+        ippStsH263MCBPCInterCodeErr
+        ippStsH263MCBPCIntraCodeErr
+        ippStsNotEvenStepErr
+        ippStsHistoNofLevelsErr
+        ippStsLUTNofLevelsErr
+        ippStsMP4BitOffsetErr
+        ippStsMP4QPErr
+        ippStsMP4BlockIdxErr
+        ippStsMP4BlockTypeErr
+        ippStsMP4MVCodeErr
+        ippStsMP4VLCCodeErr
+        ippStsMP4DCCodeErr
+        ippStsMP4FcodeErr
+        ippStsMP4AlignErr
+        ippStsMP4TempDiffErr
+        ippStsMP4BlockSizeErr
+        ippStsMP4ZeroBABErr
+        ippStsMP4PredDirErr
+        ippStsMP4BitsPerPixelErr
+        ippStsMP4VideoCompModeErr
+        ippStsMP4LinearModeErr
+        ippStsH263PredModeErr
+        ippStsH263BlockStepErr
+        ippStsH263MBStepErr
+        ippStsH263FrameWidthErr
+        ippStsH263FrameHeightErr
+        ippStsH263ExpandPelsErr
+        ippStsH263PlaneStepErr
+        ippStsH263QuantErr
+        ippStsH263MVCodeErr
+        ippStsH263VLCCodeErr
+        ippStsH263DCCodeErr
+        ippStsH263ZigzagLenErr
+        ippStsFBankFreqErr
+        ippStsFBankFlagErr
+        ippStsFBankErr
+        ippStsNegOccErr
+        ippStsCdbkFlagErr
+        ippStsSVDCnvgErr
+        ippStsJPEGHuffTableErr
+        ippStsJPEGDCTRangeErr
+        ippStsJPEGOutOfBufErr
+        ippStsDrawTextErr
+        ippStsChannelOrderErr
+        ippStsZeroMaskValuesErr
+        ippStsQuadErr
+        ippStsRectErr
+        ippStsCoeffErr
+        ippStsNoiseValErr
+        ippStsDitherLevelsErr
+        ippStsNumChannelsErr
+        ippStsCOIErr
+        ippStsDivisorErr
+        ippStsAlphaTypeErr
+        ippStsGammaRangeErr
+        ippStsGrayCoefSumErr
+        ippStsChannelErr
+        ippStsToneMagnErr
+        ippStsToneFreqErr
+        ippStsTonePhaseErr
+        ippStsTrnglMagnErr
+        ippStsTrnglFreqErr
+        ippStsTrnglPhaseErr
+        ippStsTrnglAsymErr
+        ippStsHugeWinErr
+        ippStsJaehneErr
+        ippStsStrideErr
+        ippStsEpsValErr
+        ippStsWtOffsetErr
+        ippStsAnchorErr
+        ippStsMaskSizeErr
+        ippStsShiftErr
+        ippStsSampleFactorErr
+        ippStsSamplePhaseErr
+        ippStsFIRMRFactorErr
+        ippStsFIRMRPhaseErr
+        ippStsRelFreqErr
+        ippStsFIRLenErr
+        ippStsIIROrderErr
+        ippStsDlyLineIndexErr
+        ippStsResizeFactorErr
+        ippStsInterpolationErr
+        ippStsMirrorFlipErr
+        ippStsMoment00ZeroErr
+        ippStsThreshNegLevelErr
+        ippStsThresholdErr
+        ippStsContextMatchErr
+        ippStsFftFlagErr
+        ippStsFftOrderErr
+        ippStsStepErr
+        ippStsScaleRangeErr
+        ippStsDataTypeErr
+        ippStsOutOfRangeErr
+        ippStsDivByZeroErr
+        ippStsMemAllocErr
+        ippStsNullPtrErr
+        ippStsRangeErr
+        ippStsSizeErr
+        ippStsBadArgErr
+        ippStsNoMemErr
+        ippStsSAReservedErr3
+        ippStsErr
+        ippStsSAReservedErr1
 
-        ippStsNoErr                 
+        ippStsNoErr
 
 
-        ippStsNoOperation       
-        ippStsMisalignedBuf     
-        ippStsSqrtNegArg        
-        ippStsInvZero           
+        ippStsNoOperation
+        ippStsMisalignedBuf
+        ippStsSqrtNegArg
+        ippStsInvZero
         ippStsEvenMedianMaskSize
-        ippStsDivByZero         
-        ippStsLnZeroArg         
-        ippStsLnNegArg          
-        ippStsNanArg            
-        ippStsJPEGMarker        
-        ippStsResFloor          
-        ippStsOverflow          
-        ippStsLSFLow            
-        ippStsLSFHigh           
-        ippStsLSFLowAndHigh     
-        ippStsZeroOcc           
-        ippStsUnderflow         
-        ippStsSingularity       
-        ippStsDomain            
-        ippStsNonIntelCpu       
-        ippStsCpuMismatch       
+        ippStsDivByZero
+        ippStsLnZeroArg
+        ippStsLnNegArg
+        ippStsNanArg
+        ippStsJPEGMarker
+        ippStsResFloor
+        ippStsOverflow
+        ippStsLSFLow
+        ippStsLSFHigh
+        ippStsLSFLowAndHigh
+        ippStsZeroOcc
+        ippStsUnderflow
+        ippStsSingularity
+        ippStsDomain
+        ippStsNonIntelCpu
+        ippStsCpuMismatch
         ippStsNoIppFunctionFound
         ippStsDllNotFoundBestUsed
         ippStsNoOperationInDll
@@ -217,7 +217,7 @@ cdef extern from "fi_ipp.h":
         ippStsOvermuchStrings
         ippStsOverlongString
         ippStsAffineQuadChanged
-        
+
     ctypedef enum IppRoundMode:
         ippRndZero
         ippRndNear
@@ -234,7 +234,7 @@ cdef extern from "fi_ipp.h":
         ippCpuP4HT2
         ippCpuCentrino
         ippCpuITP
-        ippCpuITP2       
+        ippCpuITP2
 
     ctypedef enum IppCmpOp:
         ippCmpLess
@@ -242,7 +242,7 @@ cdef extern from "fi_ipp.h":
         ippCmpEq
         ippCmpGreaterEq
         ippCmpGreater
-        
+
     ctypedef unsigned char   Ipp8u
     ctypedef unsigned short  Ipp16u
     ctypedef unsigned int    Ipp32u
@@ -267,7 +267,7 @@ cdef extern from "fi_ipp.h":
         ippAlgHintNone
         ippAlgHintFast
         ippAlgHintAccurate
-     
+
 #cdef extern from "ippcore.h":
 #    IppStatus ippStaticInit()
 #    IppStatus ippStaticFree()
@@ -283,7 +283,7 @@ cdef extern from "fi_ipp.h":
 #cdef extern from "ippi.h":
     ctypedef struct IppiMomentState_64f
     ctypedef Ipp64f IppiHuMoment_64f[7]
-    
+
     Ipp8u* ippiMalloc_8u_C1( int widthPixels, int heightPixels, int* pStepBytes )
     Ipp32f* ippiMalloc_32f_C1( int widthPixels, int heightPixels, int* pStepBytes )
     void ippiFree(void* ptr)
@@ -296,7 +296,7 @@ cdef extern from "fi_ipp.h":
                                int srcDstStep, IppiSize roiSize)
     IppStatus ippiSub_32f_C1R(Ipp32f* pSrc1, int src1Step, Ipp32f* pSrc2,
                               int src2Step, Ipp32f* pDst, int dstStep, IppiSize roiSize)
-    
+
     IppStatus ippiAdd_8u_C1RSfs(Ipp8u* pSrc1, int src1Step, Ipp8u* pSrc2,
                                 int src2Step, Ipp8u* pDst, int dstStep, IppiSize roiSize,
                                 int scaleFactor)
@@ -393,10 +393,10 @@ cdef extern from "fi_ipp.h":
                                                 IppiSize srcRoiSize, Ipp8u* pTpl,
                                                 int tplStep, IppiSize tplRoiSize,
                                                 Ipp8u* pDst, int dstStep, int scaleFactor )
-    
+
     IppStatus ippiHistogramRange_8u_C1R(Ipp8u* pSrc, int srcStep, IppiSize roiSize,
                                         Ipp32s* pHist, Ipp32s* pLevels, int nLevels)
-    
+
     IppStatus ippiHistogramEven_8u_C1R(Ipp8u* pSrc, int srcStep, IppiSize roiSize,
                                        Ipp32s* pHist, Ipp32s* pLevels,
                                        int nLevels, Ipp32s lowerLevel, Ipp32s upperLevel)
