@@ -62,7 +62,11 @@ ipp_version_struct_t GetIPPVersion() {
   ipp_version_struct_t result;
   result.major = IPP_VERSION_MAJOR;
   result.minor = IPP_VERSION_MINOR;
+#ifdef IPP_VERSION_BUILD
   result.build = IPP_VERSION_BUILD;
+#else
+  result.build = 0;
+#endif
   return result;
 }
 
