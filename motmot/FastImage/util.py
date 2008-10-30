@@ -32,11 +32,9 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
             ipp_arch = 'ia32'
         else:
             raise NotImplementedError("auto-architecture detection not implemented on this platform")
-            
+
     vals = {}
-    if ipp_version not in ['5.2']:
-        raise NotImplementedError("no support for this version of IPP implemented")
-    
+
     # static/shared ideas from IPP 5.2 ipp-samples/data-compression/Makefile.osx
     # See also http://support.intel.com/support/performancetools/libraries/ipp/sb/CS-021491.htm
     if sys.platform.startswith('linux'):
