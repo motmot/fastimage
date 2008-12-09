@@ -1,7 +1,7 @@
+import pkg_resources
 import unittest
 import FastImage as fi
-
-import numpy as nx
+import numpy as np
 
 class TestIPP(unittest.TestCase):
     def test_version(self):
@@ -27,8 +27,8 @@ class TestFastImageBase(unittest.TestCase):
     def setUp(self):
         self.fastimagefactories = [fi.FastImage8u,
                                    fi.FastImage32f]
-        self.ar_dtypes = [nx.uint8,
-                          nx.float32]
+        self.ar_dtypes = [np.uint8,
+                          np.float32]
 
     def test_roi(self):
         sz = fi.Size(20,10)
@@ -42,9 +42,9 @@ class TestFastImageBase(unittest.TestCase):
             imB=imA.roi(left,bottom,onepix)
             imB.set_val(12,onepix)
 
-            arA = 87*nx.ones((sz.h, sz.w),nx.uint8)
+            arA = 87*np.ones((sz.h, sz.w),np.uint8)
             arA[bottom,left] = 12
-            self.assert_( nx.allclose(arA, nx.asarray(imA)))
+            self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_roi2(self):
         sz = fi.Size(20,10)
@@ -59,19 +59,19 @@ class TestFastImageBase(unittest.TestCase):
             del imA
             imB.set_val(12,onepix)
 
-            arA = 87*nx.ones((sz.h, sz.w),nx.uint8)
+            arA = 87*np.ones((sz.h, sz.w),np.uint8)
             arB = arA[bottom,left]
             del arA
             arB = 12
-            self.assert_( nx.allclose(arB, nx.asarray(imB)))
+            self.assert_( np.allclose(arB, np.asarray(imB)))
 
     def test_basic(self):
         size = fi.Size(20,10)
         for (fif,ar_dtype) in zip(self.fastimagefactories,self.ar_dtypes):
             imA=fif(size)
             imA.set_val(0,size)
-            arA = nx.zeros((size.h, size.w),ar_dtype)
-            self.assert_( nx.allclose(arA, nx.asarray(imA)))
+            arA = np.zeros((size.h, size.w),ar_dtype)
+            self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_getitem(self):
         size = fi.Size(20,10)
@@ -85,11 +85,11 @@ class TestFastImageBase(unittest.TestCase):
         for (fif,ar_dtype) in zip(self.fastimagefactories,self.ar_dtypes):
             imA=fif(size)
             imA.set_val(0,size)
-            arA = nx.zeros((size.h, size.w),ar_dtype)
+            arA = np.zeros((size.h, size.w),ar_dtype)
 
             imB=fi.copy(imA)
             imB.set_val(2,size)
-            self.assert_( not nx.allclose(nx.asarray(imA),nx.asarray(imB)) )
+            self.assert_( not np.allclose(np.asarray(imA),np.asarray(imB)) )
 
 class TestFastImage8u(unittest.TestCase):
 
@@ -102,8 +102,8 @@ class TestFastImage8u(unittest.TestCase):
         imB=fi.FastImage32f(sz)
         imA.get_32f_copy_put(imB,sz)
 
-        arB = 87*nx.ones((sz.h, sz.w),nx.float)
-        self.assert_( nx.allclose(arB, nx.asarray(imB)))
+        arB = 87*np.ones((sz.h, sz.w),np.float)
+        self.assert_( np.allclose(arB, np.asarray(imB)))
 
     def test_absdiff(self):
 
@@ -120,10 +120,10 @@ class TestFastImage8u(unittest.TestCase):
         imC=fi.FastImage8u(sz)
         imA.get_absdiff_put(imB,imC,sz)
 
-        arA = A*nx.ones((sz.h, sz.w),nx.int16)
-        arB = B*nx.ones((sz.h, sz.w),nx.int16)
+        arA = A*np.ones((sz.h, sz.w),np.int16)
+        arB = B*np.ones((sz.h, sz.w),np.int16)
         arC = abs(arA - arB)
-        self.assert_( nx.allclose(arC, nx.asarray(imC)))
+        self.assert_( np.allclose(arC, np.asarray(imC)))
 
     def test_absdiff2(self):
 
@@ -140,10 +140,10 @@ class TestFastImage8u(unittest.TestCase):
         imC=fi.FastImage8u(sz)
         imA.get_absdiff_put(imB,imC,sz)
 
-        arA = A*nx.ones((sz.h, sz.w),nx.int16)
-        arB = B*nx.ones((sz.h, sz.w),nx.int16)
+        arA = A*np.ones((sz.h, sz.w),np.int16)
+        arB = B*np.ones((sz.h, sz.w),np.int16)
         arC = abs(arA - arB)
-        self.assert_( nx.allclose(arC, nx.asarray(imC)))
+        self.assert_( np.allclose(arC, np.asarray(imC)))
 
     def test_sub(self):
 
@@ -164,12 +164,12 @@ class TestFastImage8u(unittest.TestCase):
         imB.get_sub_put(imA,imD,sz) # imD = imB - im A
 
         # perform signed int math then clip to emulate
-        arA = A*nx.ones((sz.h, sz.w),nx.int16)
-        arB = B*nx.ones((sz.h, sz.w),nx.int16)
-        arC = nx.clip(arA - arB,0,255)
-        arD = nx.clip(arB - arA,0,255)
-        self.assert_( nx.allclose(arC, nx.asarray(imC)))
-        self.assert_( nx.allclose(arD, nx.asarray(imD)))
+        arA = A*np.ones((sz.h, sz.w),np.int16)
+        arB = B*np.ones((sz.h, sz.w),np.int16)
+        arC = np.clip(arA - arB,0,255)
+        arD = np.clip(arB - arA,0,255)
+        self.assert_( np.allclose(arC, np.asarray(imC)))
+        self.assert_( np.allclose(arD, np.asarray(imD)))
 
     def test_iconvert(self):
         sz = fi.Size(2,2)
@@ -180,11 +180,27 @@ class TestFastImage8u(unittest.TestCase):
         imA=fi.FastImage8u(sz)
         imA %= fi.convert_to_8u(imB)
 
-        arB=3.2*nx.ones((2,2),nx.float32)
-        arA=(3*nx.ones((2,2))).astype(nx.uint8)
+        arB=3.2*np.ones((2,2),np.float32)
+        arA=(3*np.ones((2,2))).astype(np.uint8)
 
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
-        self.assert_( nx.allclose(arB, nx.asarray(imB)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
+        self.assert_( np.allclose(arB, np.asarray(imB)))
+
+    def test_mono8_to_yuv422(self):
+        sz = fi.Size(5,5)
+
+        L = fi.FastImage8u(sz)
+        L.set_val(100,sz)
+
+        y,u,v = L.to_yuv422()
+        print 'L'
+        print np.asarray(L)
+        print 'y'
+        print np.asarray(y)
+        print 'u'
+        print np.asarray(u)
+        print 'v'
+        print np.asarray(v)
 
 class TestFastImage32f(unittest.TestCase):
     def test_roi(self):
@@ -199,9 +215,9 @@ class TestFastImage32f(unittest.TestCase):
         imB=imA.roi(left,bottom,onepix)
         imB.set_val(12,onepix)
 
-        arA = 87*nx.ones((sz.h, sz.w),nx.float32)
+        arA = 87*np.ones((sz.h, sz.w),np.float32)
         arA[bottom,left]=12
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_add_weighted_8u(self):
 
@@ -218,10 +234,10 @@ class TestFastImage32f(unittest.TestCase):
 
         imA.toself_add_weighted(imB,sz,alpha)
 
-        arA = A*nx.ones((sz.h, sz.w),nx.float32)
-        arB = B*nx.ones((sz.h, sz.w),nx.uint8)
+        arA = A*np.ones((sz.h, sz.w),np.float32)
+        arB = B*np.ones((sz.h, sz.w),np.uint8)
         arA = arA*(1.0-alpha) + arB*alpha
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_add_weighted_32f(self):
 
@@ -238,10 +254,10 @@ class TestFastImage32f(unittest.TestCase):
 
         imA.toself_add_weighted(imB,sz,alpha)
 
-        arA = A*nx.ones((sz.h, sz.w),nx.float32)
-        arB = B*nx.ones((sz.h, sz.w),nx.float32)
+        arA = A*np.ones((sz.h, sz.w),np.float32)
+        arB = B*np.ones((sz.h, sz.w),np.float32)
         arA = arA*(1.0-alpha) + arB*alpha
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_squares(self):
         A = 32.2
@@ -254,9 +270,9 @@ class TestFastImage32f(unittest.TestCase):
         imC=fi.FastImage32f(sz)
         imB.get_square_put(imC,sz)
 
-        arA=A*nx.ones((sz.h, sz.w),nx.float32)
-        arC=(arA**8).astype(nx.float32)
-        self.assert_( nx.allclose(arC, nx.asarray(imC)))
+        arA=A*np.ones((sz.h, sz.w),np.float32)
+        arC=(arA**8).astype(np.float32)
+        self.assert_( np.allclose(arC, np.asarray(imC)))
 
     def test_sqrt(self):
         A = 32.2
@@ -266,9 +282,9 @@ class TestFastImage32f(unittest.TestCase):
         imA.set_val(A,sz)
         imA.toself_sqrt(sz)
 
-        arA=A*nx.ones((sz.h, sz.w),nx.float32)
-        arA=(nx.sqrt(arA)).astype(nx.float32)
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        arA=A*np.ones((sz.h, sz.w),np.float32)
+        arA=(np.sqrt(arA)).astype(np.float32)
+        self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_add_8u(self):
 
@@ -283,10 +299,10 @@ class TestFastImage32f(unittest.TestCase):
         imB.set_val(B,sz)
 
         imA.toself_add(imB,sz)
-        arA = A*nx.ones((sz.h, sz.w),nx.float32)
-        arB = B*nx.ones((sz.h, sz.w),nx.uint8)
+        arA = A*np.ones((sz.h, sz.w),np.float32)
+        arB = B*np.ones((sz.h, sz.w),np.uint8)
         arA = arA + arB
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_add_32f(self):
 
@@ -301,10 +317,10 @@ class TestFastImage32f(unittest.TestCase):
         imB.set_val(B,sz)
 
         imA.toself_add(imB,sz)
-        arA = A*nx.ones((sz.h, sz.w),nx.float32)
-        arB = B*nx.ones((sz.h, sz.w),nx.float32)
+        arA = A*np.ones((sz.h, sz.w),np.float32)
+        arB = B*np.ones((sz.h, sz.w),np.float32)
         arA = arA + arB
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
 
 
     def test_subtract1(self):
@@ -321,10 +337,10 @@ class TestFastImage32f(unittest.TestCase):
 
         imA.toself_subtract(imB,sz)
 
-        arA = A*nx.ones((sz.h, sz.w),nx.float32)
-        arB = B*nx.ones((sz.h, sz.w),nx.float32)
+        arA = A*np.ones((sz.h, sz.w),np.float32)
+        arB = B*np.ones((sz.h, sz.w),np.float32)
         arA = arA - arB
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_subtract2(self):
 
@@ -340,10 +356,10 @@ class TestFastImage32f(unittest.TestCase):
 
         imC=imA.get_subtracted(imB,sz)
 
-        arA = A*nx.ones((sz.h, sz.w),nx.float32)
-        arB = B*nx.ones((sz.h, sz.w),nx.float32)
+        arA = A*np.ones((sz.h, sz.w),np.float32)
+        arB = B*np.ones((sz.h, sz.w),np.float32)
         arC = arA - arB
-        self.assert_( nx.allclose(arC, nx.asarray(imC)))
+        self.assert_( np.allclose(arC, np.asarray(imC)))
 
     def test_subtract3(self):
 
@@ -360,32 +376,32 @@ class TestFastImage32f(unittest.TestCase):
         imC=fi.FastImage32f(sz)
         imA.get_subtracted_put(imB,imC,sz)
 
-        arA = A*nx.ones((sz.h, sz.w),nx.float32)
-        arB = B*nx.ones((sz.h, sz.w),nx.float32)
+        arA = A*np.ones((sz.h, sz.w),np.float32)
+        arB = B*np.ones((sz.h, sz.w),np.float32)
         arC = arA - arB
-        self.assert_( nx.allclose(arC, nx.asarray(imC)))
+        self.assert_( np.allclose(arC, np.asarray(imC)))
 
     def test_from_nx1(self):
 
-        A = nx.array(32.2,nx.float32)
+        A = np.array(32.2,np.float32)
         sz = fi.Size(33,323)
-        arA = nx.array(A,nx.float32)*nx.ones((sz.h, sz.w),nx.float32)
+        arA = np.array(A,np.float32)*np.ones((sz.h, sz.w),np.float32)
 
         imA=fi.asfastimage(arA)
         arA[1,3:40] = 3024.03
 
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_from_nx2(self):
 
-        A = nx.array(32.2,nx.float32)
+        A = np.array(32.2,np.float32)
         sz = fi.Size(33,323)
-        arA = nx.array(A,nx.float32)*nx.ones((sz.h, sz.w),nx.float32)
+        arA = np.array(A,np.float32)*np.ones((sz.h, sz.w),np.float32)
 
         imA=fi.copy(arA)
         arA[1,3:40] = 3024.03
 
-        self.assert_( not nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( not np.allclose(arA, np.asarray(imA)))
 
     def test_ipow(self):
         sz = fi.Size(2,2)
@@ -393,13 +409,13 @@ class TestFastImage32f(unittest.TestCase):
         imA=fi.FastImage32f(sz)
         imA.set_val(2,sz)
 
-        arA = nx.array(imA)
+        arA = np.array(imA)
         imA **= 2
         arA **= 2
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
         imA **= 0.5
         arA **= 0.5
-        self.assert_( nx.allclose(arA, nx.asarray(imA)))
+        self.assert_( np.allclose(arA, np.asarray(imA)))
 
     def test_iadd(self):
         sz = fi.Size(2,2)
@@ -433,4 +449,8 @@ def get_test_suite():
     return ts
 
 if __name__ == '__main__':
-    unittest.main()
+    if 1:
+        ts = get_test_suite()
+        ts.debug()
+    else:
+        unittest.main()
