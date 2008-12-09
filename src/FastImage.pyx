@@ -561,6 +561,14 @@ cdef class FastImage8u(FastImageBase):
         CHK_HAVEGIL(sts)
         return max_val, index_x, index_y
 
+    def to_yuv422(self):
+        cdef FastImage8u y, u, v
+
+        y = self.get_8u_copy(self.imsiz)
+        u = 128*numpy.ones_like(y)
+        v = u
+        return y,u,v
+
 cdef class FastImage32f(FastImageBase):
 
     def __cinit__(self,*args,**kw):
