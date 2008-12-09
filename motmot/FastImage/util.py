@@ -67,7 +67,7 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
 
     #  like LDFLAGS in sample Makefile.osx
     ipp_library_dirs = [ os.path.join(IPPROOT,libdirname) ]
-    ipp_libraries = ['ippi','ipps','ippcv']
+    ipp_libraries = ['ippi','ipps','ippcv','ippcc']
     LIB_ARCH=''
     if sys.platform.startswith('linux') and ipp_arch == 'em64t':
         LIB_ARCH=ipp_arch
