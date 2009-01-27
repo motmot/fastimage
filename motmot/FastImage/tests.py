@@ -186,6 +186,28 @@ class TestFastImage8u(unittest.TestCase):
         self.assert_( np.allclose(arA, np.asarray(imA)))
         self.assert_( np.allclose(arB, np.asarray(imB)))
 
+    def test_min_index(self):
+        sz = fi.Size(5,5)
+        L = fi.FastImage8u(sz)
+        imL = np.asarray(L)
+        imL[:,:] = 100
+        imL[2,4] = 10
+        val,x,y=L.min_index(sz)
+        self.assert_(val==10)
+        self.assert_(x==4)
+        self.assert_(y==2)
+
+    def test_max_index(self):
+        sz = fi.Size(5,5)
+        L = fi.FastImage8u(sz)
+        imL = np.asarray(L)
+        imL[:,:] = 10
+        imL[2,4] = 100
+        val,x,y=L.max_index(sz)
+        self.assert_(val==100)
+        self.assert_(x==4)
+        self.assert_(y==2)
+
     def test_mono8_to_yuv422(self):
         sz = fi.Size(5,5)
 
@@ -437,6 +459,28 @@ class TestFastImage32f(unittest.TestCase):
         imB.set_val(3,sz)
 
         imA %= fi.convert_to_32f(imB)
+
+    ## def test_min_index(self):
+    ##     sz = fi.Size(5,5)
+    ##     L = fi.FastImage32f(sz)
+    ##     imL = np.asarray(L)
+    ##     imL[:,:] = 100
+    ##     imL[2,4] = 10
+    ##     val,x,y=L.min_index(sz)
+    ##     self.assert_(val==10)
+    ##     self.assert_(x==4)
+    ##     self.assert_(y==2)
+
+    def test_max_index(self):
+        sz = fi.Size(5,5)
+        L = fi.FastImage32f(sz)
+        imL = np.asarray(L)
+        imL[:,:] = 10
+        imL[2,4] = 100
+        val,x,y=L.max_index(sz)
+        self.assert_(val==100)
+        self.assert_(x==4)
+        self.assert_(y==2)
 
 def get_test_suite():
     ts=unittest.TestSuite([
