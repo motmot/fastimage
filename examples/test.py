@@ -13,15 +13,15 @@ roi.set_val(1,roi.size)
 print im.stringview()
 
 
-import Numeric as nx
+import numpy as np
 
-nview = nx.asarray( im )
+nview = np.asarray( im )
 print nview
 nview[0,1]=240
 print nview
 
 # a new view
-nview = nx.asarray( im )
+nview = np.asarray( im )
 print nview
 
 
@@ -29,9 +29,9 @@ print nview
 
 ##im.show()
 
-##print nx.__version__
+##print np.__version__
 
-##nview = nx.asarray( im )
+##nview = np.asarray( im )
 ##print ai
 
 ##print nview
@@ -40,8 +40,8 @@ print nview
 
 ##im.show()
 
-a=nx.arange(12).astype(nx.UInt8)
-a=nx.reshape(a,(3,4))
+a=np.arange(12).astype(np.uint8)
+a=np.reshape(a,(3,4))
 b=fi.asfastimage(a)
 print b.stringview()
 
@@ -50,7 +50,7 @@ br = b.roi(1,1,fi.Size(1,1))
 br.set_val(10,br.size)
 print a
 
-c=fi.copy(a.astype(nx.Float32))
+c=fi.copy(a.astype(np.float32))
 print c.stringview()
 
 print b.stringview()
