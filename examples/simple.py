@@ -1,4 +1,5 @@
 from __future__ import division
+import pkg_resources
 import motmot.FastImage.FastImage as FastImage
 import numpy
 

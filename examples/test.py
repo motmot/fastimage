@@ -1,3 +1,4 @@
+import pkg_resources
 import motmot.FastImage.FastImage as fi
 
 width = 10
