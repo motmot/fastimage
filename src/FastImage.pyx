@@ -77,9 +77,16 @@ class IppError(Exception):
         #Exception.__init__(self,"Error %d: %s"%(errval,cmsg))
         Exception.__init__(self,cmsg)
 
+class FicError(Exception):
+    pass
+
 cdef void CHK_HAVEGIL( ipp.IppStatus errval ) except *:
     if (errval!=0):
         raise IppError(errval)
+
+cdef void CHK_FIC_HAVEGIL( fic.FicStatus errval ) except *:
+    if (errval!=0):
+        raise FicError('error %d'%errval)
 
 ctypedef struct PyArrayInterface:
     int two                       # contains the integer 2 as a sanity check
@@ -557,16 +564,19 @@ cdef class FastImage8u(FastImageBase):
         return min_val, index_x, index_y
 
     def max_index(self, Size size):
-        cdef ipp.IppStatus sts
+        cdef fic.FicStatus sts
         cdef int index_x, index_y
         cdef ipp.Ipp8u max_val
+        cdef fic.FiciSize sz
 
+        sz.width = size.sz.width
+        sz.height = size.sz.height
         c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = ipp.ippiMaxIndx_8u_C1R(
-            <ipp.Ipp8u*>self.im,self.step,
-            size.sz, &max_val, &index_x, &index_y)
+        sts = fic.ficiMaxIndx_8u_C1R(
+            <fic.Fic8u*>self.im,self.step,
+            sz, &max_val, &index_x, &index_y)
         c_python.Py_END_ALLOW_THREADS # acquire GIL
-        CHK_HAVEGIL(sts)
+        CHK_FIC_HAVEGIL(sts)
         return max_val, index_x, index_y
 
     def to_yuv422(self):
@@ -783,16 +793,19 @@ cdef class FastImage32f(FastImageBase):
         return self
 
     def max_index(self, Size size):
-        cdef ipp.IppStatus sts
+        cdef fic.FicStatus sts
         cdef int index_x, index_y
         cdef ipp.Ipp32f max_val
+        cdef fic.FiciSize sz
 
+        sz.width = size.sz.width
+        sz.height = size.sz.height
         c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = ipp.ippiMaxIndx_32f_C1R(
-            <ipp.Ipp32f*>self.im,self.step,
-            size.sz, &max_val, &index_x, &index_y)
-        c_python.Py_END_ALLOW_THREADS # release GIL
-        CHK_HAVEGIL(sts)
+        sts = fic.ficiMaxIndx_32f_C1R(
+            <fic.Fic32f*>self.im,self.step,
+            sz, &max_val, &index_x, &index_y)
+        c_python.Py_END_ALLOW_THREADS # acquire GIL
+        CHK_FIC_HAVEGIL(sts)
         return max_val, index_x, index_y
 
 def asfastimage( object arr ):
