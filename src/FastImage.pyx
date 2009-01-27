@@ -334,6 +334,9 @@ cdef class FastImage8u(FastImageBase):
                 sys.stderr.flush()
 
         self.im=ipp.ippiMalloc_8u_C1( size.sz.width, size.sz.height, &self.step )
+        if self.step<size.sz.width:
+            raise MemoryError('self.step is %d (width=%d, height=%d)'%(
+                self.step, size.sz.width, size.sz.height))
         if self.im==NULL: raise MemoryError("Error allocating memory")
         self.strides[0] = self.step
         if FASTIMAGEDEBUG>=1:
