@@ -215,14 +215,6 @@ class TestFastImage8u(unittest.TestCase):
         L.set_val(100,sz)
 
         y,u,v = L.to_yuv422()
-        print 'L'
-        print np.asarray(L)
-        print 'y'
-        print np.asarray(y)
-        print 'u'
-        print np.asarray(u)
-        print 'v'
-        print np.asarray(v)
 
 class TestFastImage32f(unittest.TestCase):
     def test_roi(self):
