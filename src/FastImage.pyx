@@ -104,6 +104,10 @@ CmpGreaterEq = ipp.ippCmpGreaterEq
 CmpGreater = ipp.ippCmpGreater
 
 cdef class Size:
+    """size of 2D image
+
+    sz=Size(width,height)
+    """
     # keep this read-only to prevent bizarre problems if multiple image share same size
     def __init__(self,int width,int height):
         self.sz.width = width
@@ -310,6 +314,7 @@ cdef class FastImageBase:
 
 cdef class FastImage32f(FastImageBase) # forward declaration
 cdef class FastImage8u(FastImageBase):
+    """a fast 2D array of 8u"""
 
     def __cinit__(self,*args,**kw):
         self.strides[1] = 1
