@@ -573,7 +573,7 @@ cdef class FastImage8u(FastImageBase):
         cdef FastImage8u y, u, v
 
         y = self.get_8u_copy(self.imsiz)
-        u = 128*numpy.ones_like(y)
+        u = asfastimage(128*numpy.ones_like(y))
         v = u
         return y,u,v
 
