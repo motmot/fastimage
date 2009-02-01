@@ -80,3 +80,24 @@ FicStatus ficiMinIndx_8u_C1R(const Fic8u* pSrc, const int srcStep,
   *val = curmin;
   return ficStsNoErr;
 }
+
+FicStatus ficiDotProd_8u64f_C1R(const Fic8u* pSrc1, const int src1Step,
+                                const Fic8u* pSrc2, const int src2Step,
+                                const FiciSize roiSize, Fic64f* result) {
+  Fic64f accum;
+  int i,j;
+  Fic8u* row1start;
+  Fic8u* row2start;
+
+  accum = 0.0;
+  for (i=0;i<roiSize.height;i++){
+    row1start = (Fic8u*)((intptr_t)pSrc1 + i*src1Step);
+    row2start = (Fic8u*)((intptr_t)pSrc2 + i*src2Step);
+    for (j=0;j<roiSize.width;j++){
+      accum += (*(Fic8u*)((intptr_t)row1start+j) *
+                *(Fic8u*)((intptr_t)row2start+j));
+      }
+    }
+  *result = accum;
+  return ficStsNoErr;
+}

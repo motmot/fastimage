@@ -105,6 +105,25 @@ class TestFastImage8u(unittest.TestCase):
         arB = 87*np.ones((sz.h, sz.w),np.float)
         self.assert_( np.allclose(arB, np.asarray(imB)))
 
+    def test_dot(self):
+
+        A = 32
+        B = 38
+        sz = fi.Size(33,323)
+
+        imA=fi.FastImage8u(sz)
+        imA.set_val(A,sz)
+
+        imB=fi.FastImage8u(sz)
+        imB.set_val(B,sz)
+
+        C = imA.dot(imB,sz)
+
+        arA = A*np.ones((sz.h, sz.w),np.int16)
+        arB = B*np.ones((sz.h, sz.w),np.int16)
+        arC = np.sum(arA.ravel() * arB.ravel())
+        self.assert_( np.allclose(C, arC))
+
     def test_absdiff(self):
 
         A = 32

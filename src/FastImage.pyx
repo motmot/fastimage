@@ -587,6 +587,18 @@ cdef class FastImage8u(FastImageBase):
         v = u
         return y,u,v
 
+    def dot(self,FastImage8u other,Size size):
+        cdef fic.Fic64f result
+        cdef fic.FiciSize sz
+
+        sz.width = size.sz.width
+        sz.height = size.sz.height
+        CHK_FIC_HAVEGIL( fic.ficiDotProd_8u64f_C1R(
+            <fic.Fic8u*>self.im,self.step,
+            <fic.Fic8u*>other.im,other.step,
+            sz, &result ))
+        return result
+
 cdef class FastImage32f(FastImageBase):
 
     def __cinit__(self,*args,**kw):

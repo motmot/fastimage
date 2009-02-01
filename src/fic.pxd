@@ -2,6 +2,7 @@ cdef extern from "fic.h":
     ctypedef int FicStatus
     ctypedef unsigned char Fic8u
     ctypedef float Fic32f
+    ctypedef double Fic64f
     ctypedef struct FiciSize:
         int width
         int height
@@ -15,3 +16,6 @@ cdef extern from "fic.h":
                                   Fic8u*, int*, int* )
     FicStatus ficiMaxIndx_32f_C1R( Fic32f*, int, FiciSize,
                                    Fic32f*, int*, int* )
+    FicStatus ficiDotProd_8u64f_C1R( Fic8u* pSrc1, int srcStep,
+                                     Fic8u* pSrc2, int src2Step,
+                                     FiciSize roiSize, Fic64f* pDp )
