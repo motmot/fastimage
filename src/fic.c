@@ -16,15 +16,21 @@ FicStatus ficiMaxIndx_32f_C1R(const Fic32f* pSrc, const int srcStep,
                               const FiciSize roiSize, Fic32f* val,
                               int* x, int*y) {
   int i,j;
-  Fic32f curmax=pSrc[0];
-  Fic32f curval=0.0f;
+  Fic32f curmax;
+  Fic32f curval;
   Fic32f* rowstart;
+
+  curmax=pSrc[0];
+  *x=0;
+  *y=0;
+
   for (i=0;i<roiSize.height;i++){
     rowstart = (Fic32f*)((intptr_t)pSrc + i*srcStep);
     for (j=0;j<roiSize.width;j++){
-      curval = *(Fic32f*)((intptr_t)rowstart+j*sizeof(Fic32f));
+      curval = *rowstart;
+      rowstart++;
       if (curval>curmax) {
-        curmax = curval;
+        curmax=curval;
         *x=j;
         *y=i;
       }
@@ -39,13 +45,19 @@ FicStatus ficiMaxIndx_8u_C1R(const Fic8u* pSrc, const int srcStep,
                              const FiciSize roiSize, Fic8u* val,
                              int* x, int*y) {
   int i,j;
-  Fic8u curmax=pSrc[0];
-  Fic8u curval=0;
+  Fic8u curmax;
+  Fic8u curval;
   Fic8u* rowstart;
+
+  curmax=pSrc[0];
+  *x=0;
+  *y=0;
+
   for (i=0;i<roiSize.height;i++){
     rowstart = (Fic8u*)((intptr_t)pSrc + i*srcStep);
     for (j=0;j<roiSize.width;j++){
-      curval = *(Fic8u*)((intptr_t)rowstart+j);
+      curval = *rowstart;
+      rowstart++;
       if (curval>curmax) {
         curmax = curval;
         *x=j;
@@ -62,13 +74,19 @@ FicStatus ficiMinIndx_8u_C1R(const Fic8u* pSrc, const int srcStep,
                              const FiciSize roiSize, Fic8u* val,
                              int* x, int*y) {
   int i,j;
-  Fic8u curmin=pSrc[0];
-  Fic8u curval=0;
+  Fic8u curmin;
+  Fic8u curval;
   Fic8u* rowstart;
+
+  curmin=pSrc[0];
+  *x=0;
+  *y=0;
+
   for (i=0;i<roiSize.height;i++){
     rowstart = (Fic8u*)((intptr_t)pSrc + i*srcStep);
     for (j=0;j<roiSize.width;j++){
-      curval = *(Fic8u*)((intptr_t)rowstart+j);
+      curval = *rowstart;
+      rowstart++;
       if (curval<curmin) {
         curmin = curval;
         *x=j;
@@ -94,8 +112,9 @@ FicStatus ficiDotProd_8u64f_C1R(const Fic8u* pSrc1, const int src1Step,
     row1start = (Fic8u*)((intptr_t)pSrc1 + i*src1Step);
     row2start = (Fic8u*)((intptr_t)pSrc2 + i*src2Step);
     for (j=0;j<roiSize.width;j++){
-      accum += (*(Fic8u*)((intptr_t)row1start+j) *
-                *(Fic8u*)((intptr_t)row2start+j));
+      accum += (*row1start) * (*row2start);
+      row1start++;
+      row2start++;
       }
     }
   *result = accum;
