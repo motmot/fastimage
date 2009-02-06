@@ -21,6 +21,9 @@ typedef struct {
 FicStatus ficMomentInitAlloc_64f( ficMomentState_64f** );
 FicStatus ficMomentFree_64f( ficMomentState_64f* );
 
+FicStatus ficiMinIndx_8u_C1R(const Fic8u* pSrc, const int srcStep,
+                             const FiciSize roiSize, Fic8u* val,
+                             int* x, int*y);
 FicStatus ficiMaxIndx_8u_C1R(const Fic8u* pSrc, const int srcStep,
                              const FiciSize roiSize, Fic8u* val,
                              int* x, int*y);
