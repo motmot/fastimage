@@ -599,6 +599,22 @@ cdef class FastImage8u(FastImageBase):
             sz, &result ))
         return result
 
+    def sobel_horiz(self, Size size, FastImage8u dest=None):
+        if dest is None:
+            dest = FastImage8u( size )
+        else:
+            assert dest.size == size
+        CHK_HAVEGIL( ipp.ippiFilterSobelHoriz_8u_C1R(<ipp.Ipp8u*>self.im, self.step, <ipp.Ipp8u*>dest.im, dest.step, size.sz ))
+        return dest
+
+    def sobel_vert(self, Size size, FastImage8u dest=None):
+        if dest is None:
+            dest = FastImage8u( size )
+        else:
+            assert dest.size == size
+        CHK_HAVEGIL( ipp.ippiFilterSobelVert_8u_C1R(<ipp.Ipp8u*>self.im, self.step, <ipp.Ipp8u*>dest.im, dest.step, size.sz ))
+        return dest
+
 cdef class FastImage32f(FastImageBase):
 
     def __cinit__(self,*args,**kw):
@@ -819,6 +835,22 @@ cdef class FastImage32f(FastImageBase):
         c_python.Py_END_ALLOW_THREADS # acquire GIL
         CHK_FIC_HAVEGIL(sts)
         return max_val, index_x, index_y
+
+    def sobel_horiz(self, Size size, FastImage32f dest=None):
+        if dest is None:
+            dest = FastImage32f( size )
+        else:
+            assert dest.size == size
+        CHK_HAVEGIL( ipp.ippiFilterSobelHoriz_32f_C1R(<ipp.Ipp32f*>self.im, self.step, <ipp.Ipp32f*>dest.im, dest.step, size.sz ))
+        return dest
+
+    def sobel_vert(self, Size size, FastImage32f dest=None):
+        if dest is None:
+            dest = FastImage32f( size )
+        else:
+            assert dest.size == size
+        CHK_HAVEGIL( ipp.ippiFilterSobelVert_32f_C1R(<ipp.Ipp32f*>self.im, self.step, <ipp.Ipp32f*>dest.im, dest.step, size.sz ))
+        return dest
 
 def asfastimage( object arr ):
     """return a FastImage view of an array"""

@@ -426,6 +426,10 @@ cdef extern from "fi_ipp.h":
     IppStatus ippiAbsDiff_32f_C1R(Ipp32f* pSrc1, int srcStep,
                                   Ipp32f* pSrc2, int src2Step,
                                   Ipp32f* pDst, int dstStep, IppiSize roiSize )
+    IppStatus ippiFilterSobelHoriz_32f_C1R( Ipp32f *pSrc, int srcStep, Ipp32f *pDst, int dstStep, IppiSize dstRoiSize )
+    IppStatus ippiFilterSobelVert_32f_C1R ( Ipp32f *pSrc, int srcStep, Ipp32f *pDst, int dstStep, IppiSize dstRoiSize )
+    IppStatus ippiFilterSobelHoriz_8u_C1R( Ipp8u *pSrc, int srcStep, Ipp8u *pDst, int dstStep, IppiSize dstRoiSize )
+    IppStatus ippiFilterSobelVert_8u_C1R ( Ipp8u *pSrc, int srcStep, Ipp8u *pDst, int dstStep, IppiSize dstRoiSize )
 
 #cdef extern from "ipps.h":
     IppStatus ippSetFlushToZero( int value, unsigned int* pUMask )
