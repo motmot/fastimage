@@ -622,9 +622,17 @@ cdef class FastImage8u(FastImageBase):
         CHK_FIC_HAVEGIL( fic.ficiFilterSobelVert_8u_C1R(<fic.Fic8u*>self.im, self.step, <fic.Fic8u*>dest.im, dest.step, sz ))
         return dest
 
-    def dilate3x3_inplace(self,Size size,n_iter=1):
-        for i in range(n_iter):
-            CHK_HAVEGIL( ipp.ippiDilate3x3_8u_C1IR(<ipp.Ipp8u*>self.im, self.step, size.sz ))
+    def dilate3x3(self,Size size,FastImage8u dest=None):
+        if dest is None:
+            dest = FastImage8u( size )
+        else:
+            assert dest.size == size
+        CHK_HAVEGIL( ipp.ippiDilate3x3_8u_C1R(<ipp.Ipp8u*>self.im, self.step, <ipp.Ipp8u*>dest.im, dest.step, size.sz ))
+        return dest
+
+#    def dilate3x3_inplace(self,Size size,n_iter=1):
+#        for i in range(n_iter):
+#            CHK_HAVEGIL( ipp.ippiDilate3x3_8u_C1IR(<ipp.Ipp8u*>self.im, self.step, size.sz ))
 
     def gauss3x3(self,Size size):
         out = FastImage8u(size)
