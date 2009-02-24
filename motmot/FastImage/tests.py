@@ -255,6 +255,28 @@ class TestFastImage32f(unittest.TestCase):
         arA[bottom,left]=12
         self.assert_( np.allclose(arA, np.asarray(imA)))
 
+    def test_dot(self):
+
+        A = 254
+        B = 255
+        sz = fi.Size(33,323)
+
+        imA=fi.FastImage32f(sz)
+        imA.set_val(A,sz)
+
+        imB=fi.FastImage32f(sz)
+        imB.set_val(B,sz)
+
+        C = imA.dot(imB,sz)
+
+        # Do comparison in floating point to ensure no integer wrap-
+        # around bugs.
+
+        arA = A*np.ones((sz.h, sz.w),np.float)
+        arB = B*np.ones((sz.h, sz.w),np.float)
+        arC = np.sum(arA.ravel() * arB.ravel())
+        self.assert_( abs(C-arC) < 1e-16 )
+
     def test_add_weighted_8u(self):
 
         A = 32.2

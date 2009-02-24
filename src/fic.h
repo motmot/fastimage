@@ -35,6 +35,9 @@ FicStatus ficiMaxIndx_32f_C1R(const Fic32f* pSrc, const int srcStep,
 FicStatus ficiDotProd_8u64f_C1R(const Fic8u* pSrc1, const int src1Step,
                                 const Fic8u* pSrc2, const int src2Step,
                                 const FiciSize roiSize, Fic64f* result);
+FicStatus ficiDotProd_32f64f_C1R(const Fic32f* pSrc1, const int src1Step,
+                                 const Fic32f* pSrc2, const int src2Step,
+                                 const FiciSize roiSize, Fic64f* result);
 
 FicStatus ficiFilterSobelHoriz_32f_C1R( Fic32f *pSrc, int srcStep, Fic32f *pDst, int dstStep, FiciSize dstRoiSize );
 FicStatus ficiFilterSobelVert_32f_C1R ( Fic32f *pSrc, int srcStep, Fic32f *pDst, int dstStep, FiciSize dstRoiSize );

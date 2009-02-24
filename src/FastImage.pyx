@@ -623,6 +623,24 @@ cdef class FastImage8u(FastImageBase):
         CHK_FIC_HAVEGIL( fic.ficiFilterSobelVert_8u_C1R(<fic.Fic8u*>self.im, self.step, <fic.Fic8u*>dest.im, dest.step, sz ))
         return dest
 
+    def dilate3x3_inplace(self,Size size,n_iter=1):
+        for i in range(n_iter):
+            CHK_HAVEGIL( ipp.ippiDilate3x3_8u_C1IR(<ipp.Ipp8u*>self.im, self.step, size.sz ))
+
+    def gauss3x3(self,Size size):
+        out = FastImage8u(size)
+        CHK_HAVEGIL( ipp.ippiFilterGauss_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
+                                                <ipp.Ipp8u*>out.im, out.step,
+                                                size.sz, ipp.ippMskSize3x3 ))
+        return out
+
+    def gauss5x5(self,Size size):
+        out = FastImage8u(size)
+        CHK_HAVEGIL( ipp.ippiFilterGauss_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
+                                                <ipp.Ipp8u*>out.im, out.step,
+                                                size.sz, ipp.ippMskSize5x5 ))
+        return out
+
 cdef class FastImage32f(FastImageBase):
 
     def __cinit__(self,*args,**kw):
@@ -843,6 +861,18 @@ cdef class FastImage32f(FastImageBase):
         c_python.Py_END_ALLOW_THREADS # acquire GIL
         CHK_FIC_HAVEGIL(sts)
         return max_val, index_x, index_y
+
+    def dot(self,FastImage32f other,Size size):
+        cdef fic.Fic64f result
+        cdef fic.FiciSize sz
+
+        sz.width = size.sz.width
+        sz.height = size.sz.height
+        CHK_FIC_HAVEGIL( fic.ficiDotProd_32f64f_C1R(
+            <fic.Fic32f*>self.im,self.step,
+            <fic.Fic32f*>other.im,other.step,
+            sz, &result ))
+        return result
 
     def sobel_horiz(self, Size size, FastImage32f dest=None):
         cdef fic.FiciSize sz
