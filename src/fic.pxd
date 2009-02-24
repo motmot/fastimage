@@ -19,3 +19,8 @@ cdef extern from "fic.h":
     FicStatus ficiDotProd_8u64f_C1R( Fic8u* pSrc1, int srcStep,
                                      Fic8u* pSrc2, int src2Step,
                                      FiciSize roiSize, Fic64f* pDp )
+
+    FicStatus ficiFilterSobelHoriz_32f_C1R( Fic32f *pSrc, int srcStep, Fic32f *pDst, int dstStep, FiciSize dstRoiSize )
+    FicStatus ficiFilterSobelVert_32f_C1R ( Fic32f *pSrc, int srcStep, Fic32f *pDst, int dstStep, FiciSize dstRoiSize )
+    FicStatus ficiFilterSobelHoriz_8u_C1R( Fic8u *pSrc, int srcStep, Fic8u *pDst, int dstStep, FiciSize dstRoiSize )
+    FicStatus ficiFilterSobelVert_8u_C1R ( Fic8u *pSrc, int srcStep, Fic8u *pDst, int dstStep, FiciSize dstRoiSize )
