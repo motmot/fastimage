@@ -1,3 +1,5 @@
+#emacs, this is -*-Python-*- mode
+
 cimport c_python
 cimport ipp
 cimport fic
@@ -19,7 +21,7 @@ cdef class FastImageBase:
     cdef object basetype
     cdef Size imsiz
     cdef object source_data # keep reference to original image in case it goes out of scope elsewhere
-    
+
     cdef FastImageBase c_roi( self, int left, int bottom, Size size)
 
 cdef class FastImage32f(FastImageBase) # forward definition
@@ -30,7 +32,7 @@ cdef class FastImage8u(FastImageBase):
     cdef void fast_set_val_masked( self, ipp.Ipp8u val, FastImage8u mask, Size size)
     cdef void fast_get_32f_copy_put(self, FastImage32f result,Size size)
     cdef void fast_get_compare_int_put_greater( self, int other_int, FastImage8u dest, Size size)
-    
+
 cdef class FastImage32f(FastImageBase):
     cdef void fast_toself_add_weighted_8u( self, FastImage8u other, Size size, float alpha)
     cdef void fast_toself_add_weighted_32f( self, FastImage32f other, Size size, float alpha)

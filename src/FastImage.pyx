@@ -1,5 +1,4 @@
 #emacs, this is -*-Python-*- mode
-# $Id: $
 
 # indexing starts from left, bottom
 
