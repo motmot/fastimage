@@ -97,7 +97,18 @@ FicStatus ficiFilterSobelHoriz_32f_C1R( Fic32f *pSrc, int srcStep, Fic32f *pDst,
 }
 
 FicStatus ficiFilterSobelVert_32f_C1R ( Fic32f *pSrc, int srcStep, Fic32f *pDst, int dstStep, FiciSize dstRoiSize ){
-  return ficStsNotImplemented;
+  int w,h;
+  // rimage uses column-based indexing, so we flip axes here.
+  h = dstRoiSize.width;
+  w = dstRoiSize.height;
+  if (dstRoiSize.width*sizeof(Fic32f) != srcStep) {
+    return ficStsOnlyContiguousDataSupported;
+  }
+  if (dstStep != srcStep) {
+    return ficStsShapeMismatch;
+  }
+  sobel_h(pSrc, &w, &h, pDst);
+  return ficStsNoErr;
 }
 
 FicStatus ficiFilterSobelHoriz_8u_C1R( Fic8u *pSrc, int srcStep, Fic8u *pDst, int dstStep, FiciSize dstRoiSize ){
