@@ -1,16 +1,16 @@
 #emacs, this is -*-Python-*- mode
 
 cimport c_python
-cimport ipp
+cimport fw
 cimport fic
 
 ctypedef void* fiptr # pointer to FastImage base type
 
 cdef class Size:
-    cdef ipp.IppiSize sz
+    cdef fw.FwiSize sz
 
 cdef class Point:
-    cdef ipp.IppiPoint pt
+    cdef fw.FwiPoint pt
 
 cdef class FastImageBase:
     cdef fiptr im
@@ -29,7 +29,7 @@ cdef class FastImage32f(FastImageBase) # forward definition
 cdef class FastImage8u(FastImageBase):
     cdef void fast_get_absdiff_put(self, FastImage8u other, FastImage8u result, Size size)
     cdef void fast_get_sub_put(self, FastImage8u other, FastImage8u result, Size size)
-    cdef void fast_set_val_masked( self, ipp.Ipp8u val, FastImage8u mask, Size size)
+    cdef void fast_set_val_masked( self, fw.Fw8u val, FastImage8u mask, Size size)
     cdef void fast_get_32f_copy_put(self, FastImage32f result,Size size)
     cdef void fast_get_compare_int_put_greater( self, int other_int, FastImage8u dest, Size size)
 

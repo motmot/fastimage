@@ -3,15 +3,6 @@ import unittest
 import FastImage as fi
 import numpy as np
 
-class TestIPP(unittest.TestCase):
-    def test_version(self):
-        major,minor,build = fi.get_IPP_version()
-    def test_arch(self):
-        arch = fi.get_IPP_arch()
-        assert arch in ['em64t','ia32']
-    def test_static(self):
-        result = fi.get_IPP_static()
-
 class TestSize(unittest.TestCase):
     def test_size_eq(self):
         s1 = fi.Size(432,42)
@@ -520,7 +511,6 @@ class TestFastImage32f(unittest.TestCase):
 
 def get_test_suite():
     ts=unittest.TestSuite([
-            unittest.makeSuite(TestIPP),
             unittest.makeSuite(TestSize),
             unittest.makeSuite(TestFastImageBase),
             unittest.makeSuite(TestFastImage8u),

@@ -12,7 +12,7 @@ FASTIMAGEDEBUG = 0
 # for computing histograms
 cdef int n_hist_levels
 n_hist_levels = 256
-cdef ipp.Ipp32s hist_levels[257]
+cdef fw.Fw32s hist_levels[257]
 for i in range(0,257):
     hist_levels[i]=i
 
@@ -36,52 +36,52 @@ cdef extern from "FastImage_macros.h":
     int WRITEABLE
     int ARR_HAS_DESCR
 
-    # for IPP
-    ipp.Ipp8u*  IMPOS8u(  ipp.Ipp8u*  im, int step, int bottom, int left)
-    ipp.Ipp32f* IMPOS32f( ipp.Ipp32f* im, int step, int bottom, int left)
-    void CHK_NOGIL( ipp.IppStatus errval )
+    # for FW
+    fw.Fw8u*  IMPOS8u(  fw.Fw8u*  im, int step, int bottom, int left)
+    fw.Fw32f* IMPOS32f( fw.Fw32f* im, int step, int bottom, int left)
+    void CHK_NOGIL( fw.FwStatus errval )
 
-    char* ippGetStatusString( ipp.IppStatus StsCode )
+    char* fwGetStatusString( fw.FwStatus StsCode )
 
     cdef void InitStaticIfNecessary()
 
-    ctypedef struct ipp_version_struct_t:
+    ctypedef struct fw_version_struct_t:
         int major
         int minor
         int build
 
-    cdef ipp_version_struct_t GetIPPVersion()
-    cdef char* GetIPPArch()
-    cdef int IsIPPStatic()
+    cdef fw_version_struct_t GetFWVersion()
+#    cdef char* GetFWArch()
+    cdef int IsFWStatic()
 
 InitStaticIfNecessary()
 
-def get_IPP_version():
-    cdef ipp_version_struct_t val
-    val = GetIPPVersion()
+def get_FW_version():
+    cdef fw_version_struct_t val
+    val = GetFWVersion()
     return val.major, val.minor, val.build
 
-def get_IPP_arch():
-    cdef char* arch_str
-    arch_str = GetIPPArch()
-    return arch_str
+## def get_FW_arch():
+##     cdef char* arch_str
+##     arch_str = GetFWArch()
+##     return arch_str
 
-def get_IPP_static():
-    return IsIPPStatic()
+def get_FW_static():
+    return IsFWStatic()
 
-class IppError(Exception):
+class FwError(Exception):
     def __init__(self, int errval):
         cdef char* cmsg
-        cmsg = ippGetStatusString(<ipp.IppStatus>errval)
+        cmsg = fwGetStatusString(<fw.FwStatus>errval)
         #Exception.__init__(self,"Error %d: %s"%(errval,cmsg))
         Exception.__init__(self,cmsg)
 
 class FicError(Exception):
     pass
 
-cdef void CHK_HAVEGIL( ipp.IppStatus errval ) except *:
+cdef void CHK_HAVEGIL( fw.FwStatus errval ) except *:
     if (errval!=0):
-        raise IppError(errval)
+        raise FwError(errval)
 
 cdef void CHK_FIC_HAVEGIL( fic.FicStatus errval ) except *:
     if (errval!=0):
@@ -103,11 +103,11 @@ cdef void free_array_struct( void* ptr, void *arr ):
     c_lib.free(ptr)
 
 # comparision operators
-CmpLess = ipp.ippCmpLess
-CmpLessEq = ipp.ippCmpLessEq
-CmpEq = ipp.ippCmpEq
-CmpGreaterEq = ipp.ippCmpGreaterEq
-CmpGreater = ipp.ippCmpGreater
+CmpLess = fw.fwCmpLess
+CmpLessEq = fw.fwCmpLessEq
+CmpEq = fw.fwCmpEq
+CmpGreaterEq = fw.fwCmpGreaterEq
+CmpGreater = fw.fwCmpGreater
 
 cdef class Size:
     """size of 2D image
@@ -191,7 +191,7 @@ cdef class FastImageBase:
         if self.view==0:
             if FASTIMAGEDEBUG>=1:
                 print self,'freeing memory %#x'%<intptr_t>self.im
-            ipp.ippiFree(self.im)
+            fw.fwiFree(self.im)
 
     def show_mem_and_step(self):
         print self,'got mem %#x step %d'%(<intptr_t>self.im,
@@ -208,9 +208,9 @@ cdef class FastImageBase:
             for j from 0 <= j < self.imsiz.sz.width:
                 valptr = rowptr+j*self.strides[1]
                 if self.basetype == '8u':
-                    line.append((<ipp.Ipp8u*>valptr)[0])
+                    line.append((<fw.Fw8u*>valptr)[0])
                 elif self.basetype == '32f':
-                    line.append((<ipp.Ipp32f*>valptr)[0])
+                    line.append((<fw.Fw32f*>valptr)[0])
             line = ' '.join(map(str,line))
             lines.append(line)
         lines = '\n'.join(lines)
@@ -286,9 +286,9 @@ cdef class FastImageBase:
         result.strides[0] = self.strides[0]
         result.step = self.step
         if self.basetype == '8u':
-            result.im = IMPOS8u(<ipp.Ipp8u*>self.im,self.step,bottom,left)
+            result.im = IMPOS8u(<fw.Fw8u*>self.im,self.step,bottom,left)
         elif self.basetype == '32f':
-            result.im = IMPOS32f(<ipp.Ipp32f*>self.im,self.step,bottom,left)
+            result.im = IMPOS32f(<fw.Fw32f*>self.im,self.step,bottom,left)
         if FASTIMAGEDEBUG>=2:
             print self,'assigning ROI from self (im: %#x)\n    to (%s: 0x%0x) (L:%d,B:%d)'%(<intptr_t>self.im,
                                                           str(result),
@@ -302,6 +302,7 @@ cdef class FastImageBase:
         return self.c_roi(left,bottom,size)
 
     def __getitem__(self,a):
+        """get element at i,j where i is the row and j is the col"""
         cdef int i,j
         cdef fiptr valptr
 
@@ -310,9 +311,50 @@ cdef class FastImageBase:
         valptr = (self.im+i*self.step)+j*self.strides[1]
 
         if self.basetype == '8u':
-            return (<ipp.Ipp8u*>valptr)[0]
+            return (<fw.Fw8u*>valptr)[0]
         elif self.basetype == '32f':
-            return (<ipp.Ipp32f*>valptr)[0]
+            return (<fw.Fw32f*>valptr)[0]
+
+    def _test_read_all(self):
+        cdef int i,j
+        cdef fw.FwiSize sz
+        cdef fiptr valptr
+        cdef fw.Fw8u val8u
+        cdef fw.Fw32f val32f
+        cdef float cum
+
+        sz = self.imsiz.sz
+        cum = 0
+        for i from 0<= i < sz.height:
+            for j from 0<= j < sz.width:
+                valptr = (self.im+i*self.step)+j*self.strides[1]
+
+                if self.basetype == '8u':
+                    val8u = (<fw.Fw8u*>valptr)[0]
+                    cum = cum + val8u
+                elif self.basetype == '32f':
+                    val32f = (<fw.Fw32f*>valptr)[0]
+                    cum = cum + val32f
+
+    def _test_write_all(self,float val):
+        cdef int i,j
+        cdef fw.FwiSize sz
+        cdef fiptr valptr
+        cdef fw.Fw8u val8u
+        cdef fw.Fw32f val32f
+
+        val8u = <fw.Fw8u>val # truncate
+        val32f = val
+
+        sz = self.imsiz.sz
+        for i from 0<= i < sz.height:
+            for j from 0<= j < sz.width:
+                valptr = (self.im+i*self.step)+j*self.strides[1]
+
+                if self.basetype == '8u':
+                    (<fw.Fw8u*>valptr)[0] = val8u
+                elif self.basetype == '32f':
+                    (<fw.Fw32f*>valptr)[0] = val32f
 
 ##    def __getitem__(self,*args,**kw):
 ##        print '*args',args
@@ -339,7 +381,7 @@ cdef class FastImage8u(FastImageBase):
                 sys.stderr.write('-='*20+'\n\n')
                 sys.stderr.flush()
 
-        self.im=ipp.ippiMalloc_8u_C1( size.sz.width, size.sz.height, &self.step )
+        self.im=fw.fwiMalloc_8u_C1( size.sz.width, size.sz.height, &self.step )
         if self.step<size.sz.width:
             raise MemoryError('self.step is %d (width=%d, height=%d)'%(
                 self.step, size.sz.width, size.sz.height))
@@ -351,7 +393,7 @@ cdef class FastImage8u(FastImageBase):
 
     def histogram(self):
         cdef PyArrayInterface* inter
-        cdef ipp.IppStatus sts
+        cdef fw.FwStatus sts
 
         hist = numpy.empty((256,),dtype=numpy.int32)
         cobj = hist.__array_struct__
@@ -361,53 +403,48 @@ cdef class FastImage8u(FastImageBase):
         inter = <PyArrayInterface*>c_python.PyCObject_AsVoidPtr(cobj)
         assert inter.two==2
 
-        c_python.Py_BEGIN_ALLOW_THREADS
-        sts =ipp.ippiHistogramRange_8u_C1R(<ipp.Ipp8u*>self.im, self.step, self.imsiz.sz,
-                                           <ipp.Ipp32s*>&(inter.data[0]), &(hist_levels[0]), 257 )
-        c_python.Py_END_ALLOW_THREADS
-        CHK_HAVEGIL(sts)
-        return hist
+        raise NotImplementedError('xxx')
 
     def set_val(self, int val, Size size):
-        CHK_HAVEGIL( ipp.ippiSet_8u_C1R( val, <ipp.Ipp8u*>self.im, self.step, size.sz ))
+        CHK_HAVEGIL( fw.fwiSet_8u_C1R( val, <fw.Fw8u*>self.im, self.step, size.sz ))
 
     def set_val_masked(self, int val, FastImage8u mask, Size size):
-        CHK_HAVEGIL( ipp.ippiSet_8u_C1MR( val, <ipp.Ipp8u*>self.im, self.step, size.sz,
-                                          <ipp.Ipp8u*>mask.im, mask.step))
+        CHK_HAVEGIL( fw.fwiSet_8u_C1MR( val, <fw.Fw8u*>self.im, self.step, size.sz,
+                                          <fw.Fw8u*>mask.im, mask.step))
 
-    cdef void fast_set_val_masked( self, ipp.Ipp8u val, FastImage8u mask, Size size):
-        CHK_HAVEGIL( ipp.ippiSet_8u_C1MR( val, <ipp.Ipp8u*>self.im, self.step, size.sz,
-                                        <ipp.Ipp8u*>mask.im, mask.step))
+    cdef void fast_set_val_masked( self, fw.Fw8u val, FastImage8u mask, Size size):
+        CHK_HAVEGIL( fw.fwiSet_8u_C1MR( val, <fw.Fw8u*>self.im, self.step, size.sz,
+                                        <fw.Fw8u*>mask.im, mask.step))
 
     def get_32f_copy(self,Size size):
         cdef FastImage32f result
         result = FastImage32f(size)
-        CHK_HAVEGIL( ipp.ippiConvert_8u32f_C1R(<ipp.Ipp8u*>self.im, self.step,
-                                               <ipp.Ipp32f*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiConvert_8u32f_C1R(<fw.Fw8u*>self.im, self.step,
+                                               <fw.Fw32f*>result.im, result.step,
                                                size.sz ))
         return result
 
     def get_32f_copy_put(self,FastImage32f result,Size size):
-        CHK_HAVEGIL( ipp.ippiConvert_8u32f_C1R(<ipp.Ipp8u*>self.im, self.step,
-                                               <ipp.Ipp32f*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiConvert_8u32f_C1R(<fw.Fw8u*>self.im, self.step,
+                                               <fw.Fw32f*>result.im, result.step,
                                                size.sz ))
 
     cdef void fast_get_32f_copy_put(self,FastImage32f result,Size size):
-        CHK_HAVEGIL( ipp.ippiConvert_8u32f_C1R(<ipp.Ipp8u*>self.im, self.step,
-                                             <ipp.Ipp32f*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiConvert_8u32f_C1R(<fw.Fw8u*>self.im, self.step,
+                                             <fw.Fw32f*>result.im, result.step,
                                              size.sz ))
 
     def get_8u_copy(self,Size size):
         cdef FastImage8u result
         result = FastImage8u(size)
-        CHK_HAVEGIL( ipp.ippiCopy_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
-                                         <ipp.Ipp8u*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiCopy_8u_C1R(<fw.Fw8u*>self.im, self.step,
+                                         <fw.Fw8u*>result.im, result.step,
                                          size.sz ))
         return result
 
     def get_8u_copy_put(self,FastImage8u result,Size size):
-        CHK_HAVEGIL( ipp.ippiCopy_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
-                                         <ipp.Ipp8u*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiCopy_8u_C1R(<fw.Fw8u*>self.im, self.step,
+                                         <fw.Fw8u*>result.im, result.step,
                                          size.sz ))
 
     def get_crosscorr_same_norm_put_32f( self, Size source_size,
@@ -417,16 +454,9 @@ cdef class FastImage8u(FastImageBase):
 
         result has same dimensions as self
         result is normalized"""
-        cdef ipp.IppStatus sts
+        cdef fw.FwStatus sts
 
-        c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = ipp.ippiCrossCorrSame_Norm_8u32f_C1R( <ipp.Ipp8u*>self.im, self.step,
-                                                    source_size.sz,
-                                                    <ipp.Ipp8u*>other.im, other.step,
-                                                    other_size.sz,
-                                                    <ipp.Ipp32f*>result.im, result.step)
-        c_python.Py_END_ALLOW_THREADS # release GIL
-        CHK_HAVEGIL(sts)
+        raise NotImplementedError('xxx')
 
     def get_crosscorr_same_norm_32f( self, Size source_size,
                                      FastImage8u other, Size other_size,
@@ -435,11 +465,7 @@ cdef class FastImage8u(FastImageBase):
 
         result has same dimensions as self
         result is normalized"""
-        cdef FastImage32f result
-        result = FastImage32f( source_size )
-        self.get_crosscorr_same_norm_put_32f( source_size, other, other_size,
-                                              result, scale_factor )
-        return result
+        raise NotImplementedError('xxx')
 
     def get_crosscorr_same_norm_scaled_put_8u( self, Size source_size,
                                                FastImage8u other, Size other_size,
@@ -448,17 +474,7 @@ cdef class FastImage8u(FastImageBase):
 
         result has same dimensions as self
         result is normalized"""
-        cdef ipp.IppStatus sts
-
-        c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = ipp.ippiCrossCorrSame_Norm_8u_C1RSfs( <ipp.Ipp8u*>self.im, self.step,
-                                                    source_size.sz,
-                                                    <ipp.Ipp8u*>other.im, other.step,
-                                                    other_size.sz,
-                                                    <ipp.Ipp8u*>result.im, result.step,
-                                                    scale_factor )
-        c_python.Py_END_ALLOW_THREADS # release GIL
-        CHK_HAVEGIL(sts)
+        raise NotImplementedError('xxx')
 
     def get_crosscorr_same_norm_scaled_8u( self, Size source_size,
                                            FastImage8u other, Size other_size,
@@ -475,36 +491,36 @@ cdef class FastImage8u(FastImageBase):
 
     def get_absdiff_put(self,FastImage8u other,FastImage8u result,Size size):
         """result = |self - other|"""
-        CHK_HAVEGIL( ipp.ippiAbsDiff_8u_C1R(<ipp.Ipp8u*>other.im, other.step,
-                                            <ipp.Ipp8u*>self.im, self.step,
-                                            <ipp.Ipp8u*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiAbsDiff_8u_C1R(<fw.Fw8u*>other.im, other.step,
+                                            <fw.Fw8u*>self.im, self.step,
+                                            <fw.Fw8u*>result.im, result.step,
                                             size.sz))
 
     cdef void fast_get_absdiff_put(self, FastImage8u other, FastImage8u result, Size size):
-        CHK_HAVEGIL( ipp.ippiAbsDiff_8u_C1R(<ipp.Ipp8u*>other.im,other.step,
-                                          <ipp.Ipp8u*>self.im,self.step,
-                                          <ipp.Ipp8u*>result.im,result.step,
+        CHK_HAVEGIL( fw.fwiAbsDiff_8u_C1R(<fw.Fw8u*>other.im,other.step,
+                                          <fw.Fw8u*>self.im,self.step,
+                                          <fw.Fw8u*>result.im,result.step,
                                           size.sz))
 
     def get_sub_put(self, FastImage8u other, FastImage8u result, Size size):
         """result = self - other"""
-        CHK_HAVEGIL( ipp.ippiSub_8u_C1RSfs(<ipp.Ipp8u*>other.im, other.step,
-                                           <ipp.Ipp8u*>self.im, self.step,
-                                           <ipp.Ipp8u*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiSub_8u_C1RSfs(<fw.Fw8u*>other.im, other.step,
+                                           <fw.Fw8u*>self.im, self.step,
+                                           <fw.Fw8u*>result.im, result.step,
                                            size.sz,0))
     cdef void fast_get_sub_put(self, FastImage8u other, FastImage8u result, Size size):
-        CHK_HAVEGIL( ipp.ippiSub_8u_C1RSfs(<ipp.Ipp8u*>other.im, other.step,
-                                         <ipp.Ipp8u*>self.im, self.step,
-                                         <ipp.Ipp8u*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiSub_8u_C1RSfs(<fw.Fw8u*>other.im, other.step,
+                                         <fw.Fw8u*>self.im, self.step,
+                                         <fw.Fw8u*>result.im, result.step,
                                          size.sz,0))
 
     def toself_threshold( self, int compare_value, int new_value, Size size, int op):
         """self = self (op) compare_value ? new_value : self"""
         print 'compare_value',compare_value
         print 'new_value',new_value
-        CHK_HAVEGIL( ipp.ippiThreshold_Val_8u_C1IR(<ipp.Ipp8u*>self.im,self.step,
+        CHK_HAVEGIL( fw.fwiThreshold_Val_8u_C1IR(<fw.Fw8u*>self.im,self.step,
                                                    size.sz, compare_value, new_value,
-                                                   <ipp.IppCmpOp>op))
+                                                   <fw.FwCmpOp>op))
 
     def get_compare( self, other, Size size, int op ):
         cdef FastImage8u result
@@ -517,25 +533,25 @@ cdef class FastImage8u(FastImageBase):
         cdef int other_int
         if type(other)==int:
             other_int = other
-            CHK_HAVEGIL( ipp.ippiCompareC_8u_C1R( <ipp.Ipp8u*>self.im,self.step,
+            CHK_HAVEGIL( fw.fwiCompareC_8u_C1R( <fw.Fw8u*>self.im,self.step,
                                                   other_int,
-                                                  <ipp.Ipp8u*>dest.im,dest.step,
-                                                  size.sz,<ipp.IppCmpOp>op))
+                                                  <fw.Fw8u*>dest.im,dest.step,
+                                                  size.sz,<fw.FwCmpOp>op))
         elif type(other)==FastImage8u:
             other8u = other
-            CHK_HAVEGIL( ipp.ippiCompare_8u_C1R( <ipp.Ipp8u*>self.im,self.step,
-                                                 <ipp.Ipp8u*>other8u.im,other8u.step,
-                                                 <ipp.Ipp8u*>dest.im,dest.step,
-                                                 size.sz,<ipp.IppCmpOp>op))
+            CHK_HAVEGIL( fw.fwiCompare_8u_C1R( <fw.Fw8u*>self.im,self.step,
+                                                 <fw.Fw8u*>other8u.im,other8u.step,
+                                                 <fw.Fw8u*>dest.im,dest.step,
+                                                 size.sz,<fw.FwCmpOp>op))
         else:
             raise TypeError("can only compare against ints and FastImage8u types")
 
     cdef void fast_get_compare_int_put_greater( self, int other_int, FastImage8u dest, Size size):
-        CHK_HAVEGIL( ipp.ippiCompareC_8u_C1R( <ipp.Ipp8u*>self.im,self.step,
+        CHK_HAVEGIL( fw.fwiCompareC_8u_C1R( <fw.Fw8u*>self.im,self.step,
                                             other_int,
-                                            <ipp.Ipp8u*>dest.im,dest.step,
+                                            <fw.Fw8u*>dest.im,dest.step,
                                             size.sz,
-                                            ipp.ippCmpGreater))
+                                            fw.fwCmpGreater))
 
     def __imod__(self, object other):
         cdef FastImage32f other32f
@@ -550,22 +566,25 @@ cdef class FastImage8u(FastImageBase):
         return self
 
     def min_index(self, Size size):
-        cdef ipp.IppStatus sts
+        cdef fic.FicStatus sts
         cdef int index_x, index_y
-        cdef ipp.Ipp8u min_val
+        cdef fic.Fic8u min_val
+        cdef fic.FiciSize sz
 
+        sz.width = size.sz.width
+        sz.height = size.sz.height
         c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = ipp.ippiMinIndx_8u_C1R(
-            <ipp.Ipp8u*>self.im,self.step,
-            size.sz, &min_val, &index_x, &index_y)
+        sts = fic.ficiMinIndx_8u_C1R(
+            <fic.Fic8u*>self.im,self.step,
+            sz, &min_val, &index_x, &index_y)
         c_python.Py_END_ALLOW_THREADS # acquire GIL
-        CHK_HAVEGIL(sts)
+        CHK_FIC_HAVEGIL(sts)
         return min_val, index_x, index_y
 
     def max_index(self, Size size):
         cdef fic.FicStatus sts
         cdef int index_x, index_y
-        cdef ipp.Ipp8u max_val
+        cdef fic.Fic8u max_val
         cdef fic.FiciSize sz
 
         sz.width = size.sz.width
@@ -627,25 +646,25 @@ cdef class FastImage8u(FastImageBase):
             dest = FastImage8u( size )
         else:
             assert dest.size == size
-        CHK_HAVEGIL( ipp.ippiDilate3x3_8u_C1R(<ipp.Ipp8u*>self.im, self.step, <ipp.Ipp8u*>dest.im, dest.step, size.sz ))
+        CHK_HAVEGIL( fw.fwiDilate3x3_8u_C1R(<fw.Fw8u*>self.im, self.step, <fw.Fw8u*>dest.im, dest.step, size.sz ))
         return dest
 
 #    def dilate3x3_inplace(self,Size size,n_iter=1):
 #        for i in range(n_iter):
-#            CHK_HAVEGIL( ipp.ippiDilate3x3_8u_C1IR(<ipp.Ipp8u*>self.im, self.step, size.sz ))
+#            CHK_HAVEGIL( fw.fwiDilate3x3_8u_C1IR(<fw.Fw8u*>self.im, self.step, size.sz ))
 
     def gauss3x3(self,Size size):
         out = FastImage8u(size)
-        CHK_HAVEGIL( ipp.ippiFilterGauss_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
-                                                <ipp.Ipp8u*>out.im, out.step,
-                                                size.sz, ipp.ippMskSize3x3 ))
+        CHK_HAVEGIL( fw.fwiFilterGauss_8u_C1R(<fw.Fw8u*>self.im, self.step,
+                                              <fw.Fw8u*>out.im, out.step,
+                                              size.sz, fw.fwMskSize3x3 ))
         return out
 
     def gauss5x5(self,Size size):
         out = FastImage8u(size)
-        CHK_HAVEGIL( ipp.ippiFilterGauss_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
-                                                <ipp.Ipp8u*>out.im, out.step,
-                                                size.sz, ipp.ippMskSize5x5 ))
+        CHK_HAVEGIL( fw.fwiFilterGauss_8u_C1R(<fw.Fw8u*>self.im, self.step,
+                                              <fw.Fw8u*>out.im, out.step,
+                                              size.sz, fw.fwMskSize5x5 ))
         return out
 
 cdef class FastImage32f(FastImageBase):
@@ -661,7 +680,7 @@ cdef class FastImage32f(FastImageBase):
         if FASTIMAGEDEBUG>=1:
             print self,'requesting 32f memory (size W:%d H:%d)'%(self.imsiz.sz.width,
                                                              self.imsiz.sz.height)
-        self.im=ipp.ippiMalloc_32f_C1( size.sz.width, size.sz.height, &self.step )
+        self.im=fw.fwiMalloc_32f_C1( size.sz.width, size.sz.height, &self.step )
         if self.im==NULL: raise MemoryError("Error allocating memory")
         self.strides[0] = self.step
         if FASTIMAGEDEBUG>=1:
@@ -669,17 +688,17 @@ cdef class FastImage32f(FastImageBase):
         self.view = 0
 
     def set_val(self, float val, Size size):
-        CHK_HAVEGIL( ipp.ippiSet_32f_C1R( val, <ipp.Ipp32f*>self.im, self.step, size.sz ))
+        CHK_HAVEGIL( fw.fwiSet_32f_C1R( val, <fw.Fw32f*>self.im, self.step, size.sz ))
 
     def toself_add(self, FastImageBase other, Size size):
         """self += other"""
         if isinstance(other,FastImage8u):
-            CHK_HAVEGIL( ipp.ippiAdd_8u32f_C1IR( <ipp.Ipp8u*>other.im, other.step,
-                                                 <ipp.Ipp32f*>self.im, self.step,
+            CHK_HAVEGIL( fw.fwiAdd_8u32f_C1IR( <fw.Fw8u*>other.im, other.step,
+                                                 <fw.Fw32f*>self.im, self.step,
                                                  size.sz))
         elif isinstance(other,FastImage32f):
-            CHK_HAVEGIL( ipp.ippiAdd_32f_C1IR( <ipp.Ipp32f*>other.im, other.step,
-                                               <ipp.Ipp32f*>self.im, self.step,
+            CHK_HAVEGIL( fw.fwiAdd_32f_C1IR( <fw.Fw32f*>other.im, other.step,
+                                               <fw.Fw32f*>self.im, self.step,
                                                size.sz))
         else:
             raise ValueError("type not supported")
@@ -687,128 +706,128 @@ cdef class FastImage32f(FastImageBase):
     def toself_add_weighted(self, FastImageBase other, Size size, float alpha):
         """self = self*(1-alpha) + alpha*other"""
         if isinstance(other,FastImage8u):
-            CHK_HAVEGIL( ipp.ippiAddWeighted_8u32f_C1IR( <ipp.Ipp8u*>other.im, other.step,
-                                                         <ipp.Ipp32f*>self.im, self.step,
+            CHK_HAVEGIL( fw.fwiAddWeighted_8u32f_C1IR( <fw.Fw8u*>other.im, other.step,
+                                                         <fw.Fw32f*>self.im, self.step,
                                                          size.sz, alpha))
         elif isinstance(other,FastImage32f):
-            CHK_HAVEGIL( ipp.ippiAddWeighted_32f_C1IR( <ipp.Ipp32f*>other.im, other.step,
-                                                       <ipp.Ipp32f*>self.im, self.step,
+            CHK_HAVEGIL( fw.fwiAddWeighted_32f_C1IR( <fw.Fw32f*>other.im, other.step,
+                                                       <fw.Fw32f*>self.im, self.step,
                                                        size.sz, alpha))
         else:
             raise ValueError("type not supported")
 
     cdef void fast_toself_add_weighted_8u( self, FastImage8u other, Size size, float alpha):
-        CHK_HAVEGIL( ipp.ippiAddWeighted_8u32f_C1IR( <ipp.Ipp8u*>other.im, other.step,
-                                                   <ipp.Ipp32f*>self.im, self.step,
+        CHK_HAVEGIL( fw.fwiAddWeighted_8u32f_C1IR( <fw.Fw8u*>other.im, other.step,
+                                                   <fw.Fw32f*>self.im, self.step,
                                                    size.sz, alpha))
 
     cdef void fast_toself_add_weighted_32f(self, FastImage32f other, Size size, float alpha):
-        CHK_HAVEGIL( ipp.ippiAddWeighted_32f_C1IR( <ipp.Ipp32f*>other.im, other.step,
-                                                   <ipp.Ipp32f*>self.im, self.step,
+        CHK_HAVEGIL( fw.fwiAddWeighted_32f_C1IR( <fw.Fw32f*>other.im, other.step,
+                                                   <fw.Fw32f*>self.im, self.step,
                                                    size.sz, alpha))
 
 
     def toself_add_square(self, FastImage8u other, Size size):
         """self += other**2"""
-        CHK_HAVEGIL( ipp.ippiAddSquare_8u32f_C1IR( <ipp.Ipp8u*>other.im, other.step,
-                                                   <ipp.Ipp32f*>self.im, self.step,
+        CHK_HAVEGIL( fw.fwiAddSquare_8u32f_C1IR( <fw.Fw8u*>other.im, other.step,
+                                                   <fw.Fw32f*>self.im, self.step,
                                                      size.sz))
     def get_square_put(self, FastImage32f result, Size size):
         """result = self**2"""
-        CHK_HAVEGIL( ipp.ippiSqr_32f_C1R( <ipp.Ipp32f*>self.im, self.step,
-                                          <ipp.Ipp32f*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiSqr_32f_C1R( <fw.Fw32f*>self.im, self.step,
+                                          <fw.Fw32f*>result.im, result.step,
                                           size.sz))
 
     cdef void fast_get_square_put(self, FastImage32f result, Size size):
-        CHK_HAVEGIL( ipp.ippiSqr_32f_C1R( <ipp.Ipp32f*>self.im, self.step,
-                                        <ipp.Ipp32f*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiSqr_32f_C1R( <fw.Fw32f*>self.im, self.step,
+                                        <fw.Fw32f*>result.im, result.step,
                                         size.sz))
 
     def get_square(self, Size size):
         """return self**2"""
         cdef FastImage32f result
         result = FastImage32f( size )
-        CHK_HAVEGIL( ipp.ippiSqr_32f_C1R( <ipp.Ipp32f*>self.im, self.step,
-                                          <ipp.Ipp32f*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiSqr_32f_C1R( <fw.Fw32f*>self.im, self.step,
+                                          <fw.Fw32f*>result.im, result.step,
                                           size.sz))
         return result
 
     def toself_square(self,Size size):
         """self = self**2"""
-        CHK_HAVEGIL( ipp.ippiSqr_32f_C1IR( <ipp.Ipp32f*>self.im, self.step,
+        CHK_HAVEGIL( fw.fwiSqr_32f_C1IR( <fw.Fw32f*>self.im, self.step,
                                           size.sz))
     cdef void fast_toself_square(self,Size size):
-        CHK_HAVEGIL( ipp.ippiSqr_32f_C1IR( <ipp.Ipp32f*>self.im, self.step,
+        CHK_HAVEGIL( fw.fwiSqr_32f_C1IR( <fw.Fw32f*>self.im, self.step,
                                          size.sz))
     def toself_sqrt(self,Size size):
         """self = sqrt(self)"""
-        CHK_HAVEGIL( ipp.ippiSqrt_32f_C1IR( <ipp.Ipp32f*>self.im, self.step,
+        CHK_HAVEGIL( fw.fwiSqrt_32f_C1IR( <fw.Fw32f*>self.im, self.step,
                                             size.sz))
 
     def get_subtracted(self,FastImage32f other,Size size):
         """result = self - other"""
         cdef FastImage32f result
         result = FastImage32f( size )
-        CHK_HAVEGIL( ipp.ippiSub_32f_C1R(<ipp.Ipp32f*>other.im, other.step,
-                                          <ipp.Ipp32f*>self.im, self.step,
-                                          <ipp.Ipp32f*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiSub_32f_C1R(<fw.Fw32f*>other.im, other.step,
+                                          <fw.Fw32f*>self.im, self.step,
+                                          <fw.Fw32f*>result.im, result.step,
                                           size.sz))
         return result
 
     def get_subtracted_put(self,FastImage32f other,FastImage32f result,Size size):
         """result = self - other"""
-        CHK_HAVEGIL( ipp.ippiSub_32f_C1R(<ipp.Ipp32f*>other.im, other.step,
-                                          <ipp.Ipp32f*>self.im, self.step,
-                                          <ipp.Ipp32f*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiSub_32f_C1R(<fw.Fw32f*>other.im, other.step,
+                                          <fw.Fw32f*>self.im, self.step,
+                                          <fw.Fw32f*>result.im, result.step,
                                           size.sz))
 
     cdef void fast_get_subtracted_put(self,FastImage32f other,FastImage32f result,Size size):
         """result = self - other"""
-        CHK_HAVEGIL( ipp.ippiSub_32f_C1R(<ipp.Ipp32f*>other.im, other.step,
-                                          <ipp.Ipp32f*>self.im, self.step,
-                                          <ipp.Ipp32f*>result.im, result.step,
+        CHK_HAVEGIL( fw.fwiSub_32f_C1R(<fw.Fw32f*>other.im, other.step,
+                                          <fw.Fw32f*>self.im, self.step,
+                                          <fw.Fw32f*>result.im, result.step,
                                           size.sz))
 
     def toself_subtract(self,FastImage32f other,Size size):
         """self = self - other"""
-        CHK_HAVEGIL( ipp.ippiSub_32f_C1IR(<ipp.Ipp32f*>other.im, other.step,
-                                          <ipp.Ipp32f*>self.im, self.step,
+        CHK_HAVEGIL( fw.fwiSub_32f_C1IR(<fw.Fw32f*>other.im, other.step,
+                                          <fw.Fw32f*>self.im, self.step,
                                           size.sz))
 
     def get_8u_copy(self,Size size):
         """other = self"""
         cdef FastImage8u other
         other = FastImage8u(size)
-        CHK_HAVEGIL( ipp.ippiConvert_32f8u_C1R(
-            <ipp.Ipp32f*>self.im,self.step,
-            <ipp.Ipp8u*>other.im,other.step,
-            size.sz, ipp.ippRndNear ))
+        CHK_HAVEGIL( fw.fwiConvert_32f8u_C1R(
+            <fw.Fw32f*>self.im,self.step,
+            <fw.Fw8u*>other.im,other.step,
+            size.sz))#, fw.fwRndNear ))
         return other
 
     def get_8u_copy_put(self,FastImage8u other,Size size):
         """other = self"""
-        CHK_HAVEGIL( ipp.ippiConvert_32f8u_C1R(
-            <ipp.Ipp32f*>self.im,self.step,
-            <ipp.Ipp8u*>other.im,other.step,
-            size.sz, ipp.ippRndNear ))
+        CHK_HAVEGIL( fw.fwiConvert_32f8u_C1R(
+            <fw.Fw32f*>self.im,self.step,
+            <fw.Fw8u*>other.im,other.step,
+            size.sz))#, fw.fwRndNear ))
 
     cdef void fast_get_8u_copy_put(self,FastImage8u other,Size size):
-        CHK_HAVEGIL( ipp.ippiConvert_32f8u_C1R(
-            <ipp.Ipp32f*>self.im,self.step,
-            <ipp.Ipp8u*>other.im,other.step,
-            size.sz, ipp.ippRndNear ))
+        CHK_HAVEGIL( fw.fwiConvert_32f8u_C1R(
+            <fw.Fw32f*>self.im,self.step,
+            <fw.Fw8u*>other.im,other.step,
+            size.sz))#, fw.fwRndNear ))
 
     def toself_multiply(self, float val, Size size):
         "self = self * C"
-        CHK_HAVEGIL( ipp.ippiMulC_32f_C1IR(val, <ipp.Ipp32f*>self.im, self.step, size.sz))
+        CHK_HAVEGIL( fw.fwiMulC_32f_C1IR(val, <fw.Fw32f*>self.im, self.step, size.sz))
 
     cdef void fast_toself_multiply(self, float val, Size size):
-        CHK_HAVEGIL( ipp.ippiMulC_32f_C1IR(val, <ipp.Ipp32f*>self.im, self.step, size.sz))
+        CHK_HAVEGIL( fw.fwiMulC_32f_C1IR(val, <fw.Fw32f*>self.im, self.step, size.sz))
 
     def get_multiply_put(self, float val, FastImage32f other, Size size):
         "other = self * C"
-        CHK_HAVEGIL( ipp.ippiMulC_32f_C1R(<ipp.Ipp32f*>self.im, self.step,  val,
-                                          <ipp.Ipp32f*>other.im,other.step, size.sz))
+        CHK_HAVEGIL( fw.fwiMulC_32f_C1R(<fw.Fw32f*>self.im, self.step,  val,
+                                          <fw.Fw32f*>other.im,other.step, size.sz))
 
     def __ipow__(x,y,z):
         cdef FastImage32f xself
@@ -856,7 +875,7 @@ cdef class FastImage32f(FastImageBase):
     def max_index(self, Size size):
         cdef fic.FicStatus sts
         cdef int index_x, index_y
-        cdef ipp.Ipp32f max_val
+        cdef fic.Fic32f max_val
         cdef fic.FiciSize sz
 
         sz.width = size.sz.width
@@ -902,7 +921,7 @@ cdef class FastImage32f(FastImageBase):
             dest = FastImage32f( size )
         else:
             assert dest.size == size
-        CHK_FIC_HAVEGIL( fic.ficiFilterSobelVert_32f_C1R(<fic.Fic32f*>self.im, self.step, <fic.Fic32f*>dest.im, dest.step, sz ))
+        CHK_HAVEGIL( fw.fwiFilterSobelVert_32f_C1R(<fw.Fw32f*>self.im, self.step, <fw.Fw32f*>dest.im, dest.step, size.sz ))
         return dest
 
 def asfastimage( object arr ):

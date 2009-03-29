@@ -1,0 +1,15 @@
+# emacs, this is -*-Python-*- mode
+
+env = Environment()
+env.Append(CCFLAGS = '-g')
+
+for target_name in ['test1']:
+    test_obj = env.Object( target=target_name+'.o',
+                           source=[target_name+'.c'],
+                           )
+
+    env.Program( target=target_name,
+                 source=test_obj,
+                 LIBS=['fwBase','fwImage'],
+                 )
+

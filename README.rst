@@ -13,9 +13,10 @@ Description
 
 FastImage implements low-level image processing operations designed to
 operate very quickly by using SIMD instructions. This is achieved by
-calling the Intel IPP library. A bridge to numpy is made through the
+calling the Framewave__ library. A bridge to numpy is made through the
 `array interface`__.
 
+__ http://framewave.sourceforge.net/
 __ http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
 
 Allocation of aligned memory
