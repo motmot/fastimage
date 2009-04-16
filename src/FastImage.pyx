@@ -635,6 +635,7 @@ cdef class FastImage8u(FastImageBase):
 #            CHK_HAVEGIL( ipp.ippiDilate3x3_8u_C1IR(<ipp.Ipp8u*>self.im, self.step, size.sz ))
 
     def gauss3x3(self,Size size):
+        cdef FastImage8u out
         out = FastImage8u(size)
         CHK_HAVEGIL( ipp.ippiFilterGauss_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
                                                 <ipp.Ipp8u*>out.im, out.step,
@@ -642,6 +643,7 @@ cdef class FastImage8u(FastImageBase):
         return out
 
     def gauss5x5(self,Size size):
+        cdef FastImage8u out
         out = FastImage8u(size)
         CHK_HAVEGIL( ipp.ippiFilterGauss_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
                                                 <ipp.Ipp8u*>out.im, out.step,
