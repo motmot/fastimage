@@ -654,6 +654,7 @@ cdef class FastImage8u(FastImageBase):
 #            CHK_HAVEGIL( fw.fwiDilate3x3_8u_C1IR(<fw.Fw8u*>self.im, self.step, size.sz ))
 
     def gauss3x3(self,Size size):
+        cdef FastImage8u out
         out = FastImage8u(size)
         CHK_HAVEGIL( fw.fwiFilterGauss_8u_C1R(<fw.Fw8u*>self.im, self.step,
                                               <fw.Fw8u*>out.im, out.step,
@@ -661,6 +662,7 @@ cdef class FastImage8u(FastImageBase):
         return out
 
     def gauss5x5(self,Size size):
+        cdef FastImage8u out
         out = FastImage8u(size)
         CHK_HAVEGIL( fw.fwiFilterGauss_8u_C1R(<fw.Fw8u*>self.im, self.step,
                                               <fw.Fw8u*>out.im, out.step,
