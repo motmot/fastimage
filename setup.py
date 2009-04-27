@@ -15,6 +15,11 @@ ipp_define_macros = vals.get('ipp_define_macros',[])
 ipp_extra_link_args = vals.get('extra_link_args',[])
 ipp_extra_compile_args = vals.get('extra_compile_args',[])
 
+kws = {}
+if not int(os.getenv( 'DISABLE_INSTALL_REQUIRES','0' )):
+    kws['install_requires'] = ['numpy',
+                               ]
+
 setup(name="motmot.FastImage",
       author="Andrew Straw",
       author_email="strawman@astraw.com",
@@ -37,5 +42,5 @@ setup(name="motmot.FastImage",
                              ),
                    ],
       zip_safe = True,
-      )
+      **kws)
 
