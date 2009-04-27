@@ -1,6 +1,5 @@
 build
 dist
 motmot/FastImage/FastImage.so
-src/FastImage.c
 *.pyc
 *~
