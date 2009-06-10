@@ -923,7 +923,7 @@ cdef class FastImage32f(FastImageBase):
             dest = FastImage32f( size )
         else:
             assert dest.size == size
-        CHK_HAVEGIL( fw.fwiFilterSobelVert_32f_C1R(<fw.Fw32f*>self.im, self.step, <fw.Fw32f*>dest.im, dest.step, size.sz ))
+        CHK_FIC_HAVEGIL( fic.ficiFilterSobelVert_32f_C1R(<fic.Fic32f*>self.im, self.step, <fic.Fic32f*>dest.im, dest.step, sz ))
         return dest
 
 def asfastimage( object arr ):
