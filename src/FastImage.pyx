@@ -27,6 +27,26 @@ cdef extern from "limits.h":
     cdef intptr_t INT_MAX
     cdef intptr_t INT_MIN
 
+####################################
+
+cdef ensure_framewave_bug_SF2541341_fixed():
+    cdef fw.Fw8u* im
+    cdef int step, width, height
+
+    # This is essentially the same test as SF #2541341
+    for width from 2<= width < 3: # original test went to 10
+        for height from 2 <= height < 3: # original test went to 10
+            im = fw.fwiMalloc_8u_C1( width, height, &step)
+            if im==NULL: raise MemoryError("Error allocating memory")
+            if step<width:
+                raise RuntimeError('Your AMD Framewave installation has a '
+                                   'serious bug. For %dx%d image, the '
+                                   'allocated step %d is less than the width. '
+                                   'This bug should is fixed in Framewave 1.4 '
+                                   'or in svn r469 or higher.'%(
+                    width,height,step))
+            fw.fwiFree(im)
+
 cdef extern from "FastImage_macros.h":
     # for PyArrayInterface
     int CONTIGUOUS
@@ -55,6 +75,7 @@ cdef extern from "FastImage_macros.h":
     cdef int IsFWStatic()
 
 InitStaticIfNecessary()
+ensure_framewave_bug_SF2541341_fixed()
 
 def get_FW_version():
     cdef fw_version_struct_t val
