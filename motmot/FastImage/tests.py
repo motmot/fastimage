@@ -509,6 +509,38 @@ class TestFastImage32f(unittest.TestCase):
         self.assert_(x==4)
         self.assert_(y==2)
 
+def test_get_8u_copy():
+    a = np.linspace(0,255,40000).astype(np.float32)
+    a.shape=200,200
+
+    imA=fi.asfastimage(a)
+    imB=imA.get_8u_copy(imA.size)
+    b_test = np.asarray(imB)
+    diff = a-b_test
+    assert np.all(abs(diff)<1.0)
+
+def test_sobel_vert_1():
+    a = np.linspace(0,255,40000).astype(np.float32)
+    a.shape=200,200
+    imA=fi.asfastimage(a)
+    result = np.asarray(imA.sobel_vert(imA.size))
+
+    b = np.ones_like(a)
+    imB=fi.asfastimage(b)
+    imA.sobel_vert(imA.size,dest=imB)
+    assert np.allclose(result,b)
+
+def test_sobel_horiz_1():
+    a = np.linspace(0,255,40000).astype(np.float32)
+    a.shape=200,200
+    imA=fi.asfastimage(a)
+    result = np.asarray(imA.sobel_horiz(imA.size))
+
+    b = np.ones_like(a)
+    imB=fi.asfastimage(b)
+    imA.sobel_horiz(imA.size,dest=imB)
+    assert np.allclose(result,b)
+
 def get_test_suite():
     ts=unittest.TestSuite([
             unittest.makeSuite(TestSize),
