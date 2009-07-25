@@ -19,6 +19,8 @@ setup(name="motmot.FastImage",
                              sources=['src/FastImage.pyx',
                                       'src/fic.c','src/fic_sobel.c'],
                              libraries=['fwBase','fwImage'],
+                             include_dirs=['/usr/include'],
+                             library_dirs=['/usr/lib'],
                              ),
                    ],
       **kws)
