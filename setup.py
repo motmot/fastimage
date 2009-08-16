@@ -1,10 +1,5 @@
 import os, sys
-from setuptools import setup, find_packages, Extension
-
-kws = {}
-if not int(os.getenv( 'DISABLE_INSTALL_REQUIRES','0' )):
-    kws['install_requires'] = ['numpy',
-                               ]
+from distutils.core import setup, Extension
 
 setup(name="motmot.FastImage",
       author="Andrew Straw",
@@ -13,13 +8,12 @@ setup(name="motmot.FastImage",
       url='http://code.astraw.com/projects/motmot',
       license="BSD",
       version='0.5.4',
-      namespace_packages=['motmot'],
-      packages = find_packages(),
+      packages = ['motmot','motmot.FastImage'],
       ext_modules=[Extension(name="motmot.FastImage.FastImage",
-                             sources=['src/FastImage.pyx',
+                             sources=['src/FastImage.c',
                                       'src/fic.c','src/fic_sobel.c'],
                              libraries=['fwBase','fwImage'],
                              ),
                    ],
-      **kws)
+      )
 

@@ -1,6 +1,5 @@
-import pkg_resources
+import motmot.FastImage.FastImage as fi
 import unittest
-import FastImage as fi
 import numpy as np
 
 class TestSize(unittest.TestCase):
