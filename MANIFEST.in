@@ -1,0 +1,9 @@
+include bootstrap.py
+include buildout.cfg
+include examples/*
+include LICENSE.txt
+include motmot.FastImage.egg-info/stdeb.cfg
+include parse_pxd.py
+include README.rst
+include src/*
+include test_fwi/*
