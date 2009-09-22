@@ -42,8 +42,8 @@ cdef ensure_framewave_bug_SF2541341_fixed():
                 raise RuntimeError('Your AMD Framewave installation has a '
                                    'serious bug. For %dx%d image, the '
                                    'allocated step %d is less than the width. '
-                                   'This bug should is fixed in Framewave 1.4 '
-                                   'or in svn r469 or higher.'%(
+                                   'This bug is fixed in Framewave 1.3.1 '
+                                   '(or in svn r469 or higher).'%(
                     width,height,step))
             fw.fwiFree(im)
 
