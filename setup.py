@@ -1,11 +1,6 @@
 import os, sys
 from setuptools import setup, find_packages, Extension
 
-kws = {}
-if not int(os.getenv( 'DISABLE_INSTALL_REQUIRES','0' )):
-    kws['install_requires'] = ['numpy',
-                               ]
-
 setup(name="motmot.FastImage",
       author="Andrew Straw",
       author_email="strawman@astraw.com",
@@ -21,5 +16,5 @@ setup(name="motmot.FastImage",
                              libraries=['fwBase','fwImage'],
                              ),
                    ],
-      **kws)
+      )
 
