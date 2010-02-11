@@ -15,7 +15,7 @@ ipp_define_macros = vals.get('ipp_define_macros',[])
 ipp_extra_link_args = vals.get('extra_link_args',[])
 ipp_extra_compile_args = vals.get('extra_compile_args',[])
 
-setup(name="motmot.FastImage",
+setup(name="motmot.FastImage_ipp",
       author="Andrew Straw",
       author_email="strawman@astraw.com",
       description="Pythonic API for a subset of the Intel "\
