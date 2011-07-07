@@ -106,7 +106,8 @@ cdef void CHK_HAVEGIL( fw.FwStatus errval ) except *:
 
 cdef void CHK_FIC_HAVEGIL( fic.FicStatus errval ) except *:
     if (errval!=0):
-        raise FicError('error %d'%errval)
+        errstr = fic.ficGetErrorString(errval)
+        raise FicError('error %d: %s'%(errval,errstr))
 
 ctypedef struct PyArrayInterface:
     int two                       # contains the integer 2 as a sanity check
