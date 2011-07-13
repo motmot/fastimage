@@ -12,6 +12,26 @@ FicStatus ficMomentFree_64f( ficMomentState_64f*pState){
   return ficStsNoErr;
 }
 
+const char* ficGetErrorString(FicStatus s) {
+  const char* result;
+  result = "unknown error";
+  switch (s) {
+  case ficStsNoErr:
+    result = "no error";
+    break;
+  case ficStsNotImplemented:
+    result = "not implemented";
+    break;
+  case ficStsOnlyContiguousDataSupported:
+    result = "only contiguous data supported";
+    break;
+  case ficStsShapeMismatch:
+    result = "shape mismatch";
+    break;
+  }
+  return result;
+}
+
 FicStatus ficiMaxIndx_32f_C1R(const Fic32f* pSrc, const int srcStep,
                               const FiciSize roiSize, Fic32f* val,
                               int* x, int*y) {

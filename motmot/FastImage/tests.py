@@ -528,6 +528,22 @@ def test_get_8u_copy():
     diff = a-b_test
     assert np.all(abs(diff)<1.0)
 
+def test_conversion_step():
+    sz = fi.Size(660,480)
+    cls_dtype_nbytes = [ (fi.FastImage8u, np.uint8, 1),
+                         (fi.FastImage32f, np.float32, 4),
+                         ]
+    for cls, dtype, nbytes in cls_dtype_nbytes:
+        imA=cls(sz)
+
+        npB = np.empty( (sz.h,imA._step//nbytes), dtype=dtype )
+        npB = npB[:,:sz.w]
+
+        imB = fi.asfastimage( npB )
+
+        assert imA._step == imB._step
+        assert imA.size == imB.size
+
 def test_sobel_vert_1():
     a = np.linspace(0,255,40000).astype(np.float32)
     a.shape=200,200

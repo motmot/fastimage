@@ -3,3 +3,4 @@ dist
 motmot/FastImage/FastImage.so
 *.pyc
 *~
+motmot.FastImage.egg-info/

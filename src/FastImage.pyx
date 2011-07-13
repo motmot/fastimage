@@ -85,7 +85,8 @@ cdef void CHK_HAVEGIL( ipp.IppStatus errval ) except *:
 
 cdef void CHK_FIC_HAVEGIL( fic.FicStatus errval ) except *:
     if (errval!=0):
-        raise FicError('error %d'%errval)
+        errstr = fic.ficGetErrorString(errval)
+        raise FicError('error %d: %s'%(errval,errstr))
 
 ctypedef struct PyArrayInterface:
     int two                       # contains the integer 2 as a sanity check
@@ -236,6 +237,10 @@ cdef class FastImageBase:
             nbytes_tot = nbytes_tot+nbytes
         c_python.Py_END_ALLOW_THREADS
         return nbytes_tot
+
+    property _step:
+        def __get__(self):
+            return self.step
 
     property __array_struct__:
         def __get__(self):
@@ -883,13 +888,27 @@ cdef class FastImage32f(FastImageBase):
             sz, &result ))
         return result
 
+    cdef FastImage32f create_equal_shape_empty(self, Size size):
+        cdef FastImage32f dest
+        dest = FastImage32f( size )
+        if dest.step != self.step:
+            shape = ( size.sz.height, self.step/4 )
+            dtype = numpy.float32
+            tmp = numpy.empty( shape, dtype=dtype)
+            tmp = tmp[:,:size.sz.width]
+            dest = asfastimage(tmp)
+        return dest
+
     def sobel_horiz(self, Size size, FastImage32f dest=None):
         cdef fic.FiciSize sz
+        cdef int created_dest
+
+        created_dest = 0
 
         sz.width = size.sz.width
         sz.height = size.sz.height
         if dest is None:
-            dest = FastImage32f( size )
+            dest = self.create_equal_shape_empty(size)
         else:
             assert dest.size == size
         CHK_FIC_HAVEGIL( fic.ficiFilterSobelHoriz_32f_C1R(<fic.Fic32f*>self.im, self.step, <fic.Fic32f*>dest.im, dest.step, sz ))
@@ -901,7 +920,7 @@ cdef class FastImage32f(FastImageBase):
         sz.width = size.sz.width
         sz.height = size.sz.height
         if dest is None:
-            dest = FastImage32f( size )
+            dest = self.create_equal_shape_empty(size)
         else:
             assert dest.size == size
         CHK_FIC_HAVEGIL( fic.ficiFilterSobelVert_32f_C1R(<fic.Fic32f*>self.im, self.step, <fic.Fic32f*>dest.im, dest.step, sz ))

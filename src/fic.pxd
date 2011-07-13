@@ -10,6 +10,8 @@ cdef extern from "fic.h":
     FicStatus ficMomentInitAlloc_64f(ficMomentState_64f**)
     FicStatus ficMomentFree_64f( ficMomentState_64f* )
 
+    char* ficGetErrorString(FicStatus)
+
     FicStatus ficiMaxIndx_8u_C1R( Fic8u*, int, FiciSize,
                                   Fic8u*, int*, int* )
     FicStatus ficiMinIndx_8u_C1R( Fic8u*, int, FiciSize,
