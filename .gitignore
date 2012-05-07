@@ -4,3 +4,5 @@ motmot/FastImage/FastImage.so
 *.pyc
 *~
 motmot.FastImage.egg-info/
+motmot.FastImage_ipp.egg-info
+src/FastImage.c
