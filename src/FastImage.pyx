@@ -880,6 +880,17 @@ cdef class FastImage32f(FastImageBase):
             raise ValueError("only 2 and 0.5 powers supported")
         return xself
 
+    def pow(self,y):
+        cdef FastImage32f xself
+        xself = copy(self)
+        if y == 2:
+            xself.toself_square(xself.imsiz)
+        elif y==0.5:
+            xself.toself_sqrt(xself.imsiz)
+        else:
+            raise ValueError("only 2 and 0.5 powers supported")
+        return xself
+
     def __iadd__(self, object other):
         cdef FastImage8u other8u_base
         cdef square square_op

@@ -452,6 +452,17 @@ class TestFastImage32f(unittest.TestCase):
 
         self.assert_( not np.allclose(arA, np.asarray(imA)))
 
+    def test_pow(self):
+        sz = fi.Size(2,2)
+        imB=fi.FastImage32f(sz)
+        imB.set_val(2,sz)
+        arB = np.array(imB)
+        imC = imB.pow(2)
+        arC = arB**2
+
+        self.assert_( np.allclose(arB, np.asarray(imB)))
+        self.assert_( np.allclose(arC, np.asarray(imC)))
+
     def test_ipow(self):
         sz = fi.Size(2,2)
 
