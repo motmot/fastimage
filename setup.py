@@ -1,5 +1,6 @@
 import os, sys
 from setuptools import setup, find_packages, Extension
+from Cython.Build import cythonize
 
 # I need to import a module I'm about to install. How naughty is this?
 sys.path.insert(0, os.path.abspath(os.path.join('motmot','FastImage')))
@@ -25,16 +26,15 @@ setup(name="motmot.FastImage_ipp",
       version='0.5.5.ipp',
       namespace_packages=['motmot'],
       packages = find_packages(),
-      ext_modules=[Extension(name="motmot.FastImage.FastImage",
-                             sources=['src/FastImage.pyx',
-                                      'src/fic.c','src/fic_sobel.c']+ipp_sources,
-                             include_dirs=ipp_include_dirs,
-                             library_dirs=ipp_library_dirs,
-                             libraries=ipp_libraries,
-                             define_macros=ipp_define_macros,
-                             extra_link_args=ipp_extra_link_args,
-                             extra_compile_args=ipp_extra_compile_args,
-                             ),
-                   ],
-      )
-
+      ext_modules=cythonize([Extension(name="motmot.FastImage.FastImage",
+                                       sources=['src/FastImage.pyx',
+                                                'src/fic.c','src/fic_sobel.c']+ipp_sources,
+                                       include_dirs=ipp_include_dirs,
+                                       library_dirs=ipp_library_dirs,
+                                       libraries=ipp_libraries,
+                                       define_macros=ipp_define_macros,
+                                       extra_link_args=ipp_extra_link_args,
+                                       extra_compile_args=ipp_extra_compile_args,
+                                       ),
+                             ]),
+)

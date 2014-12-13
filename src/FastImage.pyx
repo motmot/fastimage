@@ -9,6 +9,12 @@ import numpy
 cdef int FASTIMAGEDEBUG
 FASTIMAGEDEBUG = 0
 
+# create char types that work in Pyrex and Cython
+cdef char CHAR_u
+CHAR_u = ord('u')
+cdef char CHAR_f
+CHAR_f = ord('f')
+
 # for computing histograms
 cdef int n_hist_levels
 n_hist_levels = 256
@@ -250,9 +256,11 @@ cdef class FastImageBase:
             inter.two = 2
             inter.nd = 2
             if self.basetype == '8u':
-                inter.typekind = 'u'[0] # unsigned int
+                inter.typekind = CHAR_u
             elif self.basetype == '32f':
-                inter.typekind = 'f'[0] # float
+                inter.typekind = CHAR_f
+            else:
+                raise ValueError('unknown basetype: %r'%self.basetype)
             inter.itemsize = self.strides[1]
             inter.flags = NOTSWAPPED | ALIGNED | WRITEABLE
             inter.strides = self.strides
@@ -294,6 +302,8 @@ cdef class FastImageBase:
             result.im = IMPOS8u(<ipp.Ipp8u*>self.im,self.step,bottom,left)
         elif self.basetype == '32f':
             result.im = IMPOS32f(<ipp.Ipp32f*>self.im,self.step,bottom,left)
+        else:
+            raise ValueError('unknown basetype: %r'%self.basetype)
         if FASTIMAGEDEBUG>=2:
             print self,'assigning ROI from self (im: %#x)\n    to (%s: 0x%0x) (L:%d,B:%d)'%(<intptr_t>self.im,
                                                           str(result),
@@ -318,6 +328,8 @@ cdef class FastImageBase:
             return (<ipp.Ipp8u*>valptr)[0]
         elif self.basetype == '32f':
             return (<ipp.Ipp32f*>valptr)[0]
+        else:
+            raise ValueError('unknown basetype: %r'%self.basetype)
 
 ##    def __getitem__(self,*args,**kw):
 ##        print '*args',args
@@ -817,11 +829,20 @@ cdef class FastImage32f(FastImageBase):
         CHK_HAVEGIL( ipp.ippiMulC_32f_C1R(<ipp.Ipp32f*>self.im, self.step,  val,
                                           <ipp.Ipp32f*>other.im,other.step, size.sz))
 
-    def __ipow__(x,y,z):
+    def __ipow__(x,y):
         cdef FastImage32f xself
         xself = x
-        if not z is None:
-            raise ValueError("modulo of power not supported")
+        if y == 2:
+            xself.toself_square(xself.imsiz)
+        elif y==0.5:
+            xself.toself_sqrt(xself.imsiz)
+        else:
+            raise ValueError("only 2 and 0.5 powers supported")
+        return xself
+
+    def pow(self,y):
+        cdef FastImage32f xself
+        xself = copy(self)
         if y == 2:
             xself.toself_square(xself.imsiz)
         elif y==0.5:
@@ -954,11 +975,11 @@ def asfastimage( object arr ):
 
     if FASTIMAGEDEBUG>=2:
         print 'asfastimage() calling __new__'
-    if inter.typekind == "u"[0] and inter.itemsize==1:
+    if inter.typekind == CHAR_u and inter.itemsize==1:
         result = FastImage8u.__new__(FastImage8u)
 ##    elif inter.typekind == "b"[0] and inter.itemsize==1: # "bool" true or false
 ##        result = FastImage8u.__new__(FastImage8u)
-    elif inter.typekind == "f"[0] and inter.itemsize==4:
+    elif inter.typekind == CHAR_f and inter.itemsize==4:
         result = FastImage32f.__new__(FastImage32f)
     else:
         raise ValueError('typekind "%s", itemsize %d not supported'%(chr(inter.typekind),inter.itemsize))
@@ -976,14 +997,6 @@ def asfastimage( object arr ):
         print '    result.view',result.view
 
     return result
-
-def cython_is_broken():
-
-    # This will break cython compilation but not pyrex. That's what we
-    # want, since the function (asfastimage) above works with Pyrex
-    # 0.9.5.1a and 0.9.6.4 but not Cython 9.8.1.1.
-
-    blech
 
 def copy( object arr ):
     """return a FastImage copy of an array"""
@@ -1013,9 +1026,9 @@ def copy( object arr ):
     if (inter.shape[0] > INT_MAX) or (inter.shape[1] > INT_MAX) or (inter.strides[0] > INT_MAX):
         raise ValueError("cannot handle such large data")
 
-    if inter.typekind == "u"[0] and inter.itemsize==1:
+    if inter.typekind == CHAR_u and inter.itemsize==1:
         result = FastImage8u(Size(inter.shape[1],inter.shape[0])) # allocate memory
-    elif inter.typekind == "f"[0] and inter.itemsize==4:
+    elif inter.typekind == CHAR_f and inter.itemsize==4:
         result = FastImage32f(Size(inter.shape[1],inter.shape[0])) # allocate memory
     else:
         raise ValueError('typekind "%s", itemsize %d not supported'%(chr(inter.typekind),inter.itemsize))
