@@ -1,5 +1,6 @@
 import os, sys
 from setuptools import setup, find_packages, Extension
+from Cython.Build import cythonize
 
 setup(name="motmot.FastImage",
       author="Andrew Straw",
@@ -10,11 +11,10 @@ setup(name="motmot.FastImage",
       version='0.5.5',
       namespace_packages=['motmot'],
       packages = find_packages(),
-      ext_modules=[Extension(name="motmot.FastImage.FastImage",
-                             sources=['src/FastImage.pyx',
-                                      'src/fic.c','src/fic_sobel.c'],
-                             libraries=['fwBase','fwImage'],
-                             ),
-                   ],
-      )
-
+      ext_modules=cythonize([Extension(name="motmot.FastImage.FastImage",
+                                       sources=['src/FastImage.pyx',
+                                                'src/fic.c','src/fic_sobel.c'],
+                                       libraries=['fwBase','fwImage'],
+                                   ),
+                        ]),
+)

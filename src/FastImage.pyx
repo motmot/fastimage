@@ -857,11 +857,9 @@ cdef class FastImage32f(FastImageBase):
         CHK_HAVEGIL( fw.fwiMulC_32f_C1R(<fw.Fw32f*>self.im, self.step,  val,
                                           <fw.Fw32f*>other.im,other.step, size.sz))
 
-    def __ipow__(x,y,z):
+    def __ipow__(x,y):
         cdef FastImage32f xself
         xself = x
-        if not z is None:
-            raise ValueError("modulo of power not supported")
         if y == 2:
             xself.toself_square(xself.imsiz)
         elif y==0.5:
@@ -1016,14 +1014,6 @@ def asfastimage( object arr ):
         print '    result.view',result.view
 
     return result
-
-def cython_is_broken():
-
-    # This will break cython compilation but not pyrex. That's what we
-    # want, since the function (asfastimage) above works with Pyrex
-    # 0.9.5.1a and 0.9.6.4 but not Cython 9.8.1.1.
-
-    blech
 
 def copy( object arr ):
     """return a FastImage copy of an array"""
