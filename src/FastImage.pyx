@@ -9,6 +9,12 @@ import numpy
 cdef int FASTIMAGEDEBUG
 FASTIMAGEDEBUG = 0
 
+# create char types that work in Pyrex and Cython
+cdef char CHAR_u
+CHAR_u = ord('u')
+cdef char CHAR_f
+CHAR_f = ord('f')
+
 # for computing histograms
 cdef int n_hist_levels
 n_hist_levels = 256
@@ -271,9 +277,11 @@ cdef class FastImageBase:
             inter.two = 2
             inter.nd = 2
             if self.basetype == '8u':
-                inter.typekind = 'u'[0] # unsigned int
+                inter.typekind = CHAR_u
             elif self.basetype == '32f':
-                inter.typekind = 'f'[0] # float
+                inter.typekind = CHAR_f
+            else:
+                raise ValueError('unknown basetype: %r'%self.basetype)
             inter.itemsize = self.strides[1]
             inter.flags = NOTSWAPPED | ALIGNED | WRITEABLE
             inter.strides = self.strides
@@ -315,6 +323,8 @@ cdef class FastImageBase:
             result.im = IMPOS8u(<fw.Fw8u*>self.im,self.step,bottom,left)
         elif self.basetype == '32f':
             result.im = IMPOS32f(<fw.Fw32f*>self.im,self.step,bottom,left)
+        else:
+            raise ValueError('unknown basetype: %r'%self.basetype)
         if FASTIMAGEDEBUG>=2:
             print self,'assigning ROI from self (im: %#x)\n    to (%s: 0x%0x) (L:%d,B:%d)'%(<intptr_t>self.im,
                                                           str(result),
@@ -340,6 +350,8 @@ cdef class FastImageBase:
             return (<fw.Fw8u*>valptr)[0]
         elif self.basetype == '32f':
             return (<fw.Fw32f*>valptr)[0]
+        else:
+            raise ValueError('unknown basetype: %r'%self.basetype)
 
     def _test_read_all(self):
         cdef int i,j
@@ -992,11 +1004,11 @@ def asfastimage( object arr ):
 
     if FASTIMAGEDEBUG>=2:
         print 'asfastimage() calling __new__'
-    if inter.typekind == "u"[0] and inter.itemsize==1:
+    if inter.typekind == CHAR_u and inter.itemsize==1:
         result = FastImage8u.__new__(FastImage8u)
 ##    elif inter.typekind == "b"[0] and inter.itemsize==1: # "bool" true or false
 ##        result = FastImage8u.__new__(FastImage8u)
-    elif inter.typekind == "f"[0] and inter.itemsize==4:
+    elif inter.typekind == CHAR_f and inter.itemsize==4:
         result = FastImage32f.__new__(FastImage32f)
     else:
         raise ValueError('typekind "%s", itemsize %d not supported'%(chr(inter.typekind),inter.itemsize))
@@ -1043,9 +1055,9 @@ def copy( object arr ):
     if (inter.shape[0] > INT_MAX) or (inter.shape[1] > INT_MAX) or (inter.strides[0] > INT_MAX):
         raise ValueError("cannot handle such large data")
 
-    if inter.typekind == "u"[0] and inter.itemsize==1:
+    if inter.typekind == CHAR_u and inter.itemsize==1:
         result = FastImage8u(Size(inter.shape[1],inter.shape[0])) # allocate memory
-    elif inter.typekind == "f"[0] and inter.itemsize==4:
+    elif inter.typekind == CHAR_f and inter.itemsize==4:
         result = FastImage32f(Size(inter.shape[1],inter.shape[0])) # allocate memory
     else:
         raise ValueError('typekind "%s", itemsize %d not supported'%(chr(inter.typekind),inter.itemsize))
