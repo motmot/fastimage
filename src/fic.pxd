@@ -1,4 +1,4 @@
-cdef extern from "fic.h":
+cdef extern from "fic.h" nogil:
     ctypedef int FicStatus
     ctypedef unsigned char Fic8u
     ctypedef float Fic32f

@@ -1,6 +1,6 @@
 #emacs, this is -*-Python-*- mode
 
-cdef extern from "stdlib.h":
+cdef extern from "stdlib.h" nogil:
     ctypedef int size_t
     void *memcpy(void*,void*,size_t)
     void *memset(void*,int,size_t)
@@ -10,7 +10,7 @@ cdef extern from "stdlib.h":
     int printf(char *format, ...)
     ctypedef int FILE
 
-cdef extern from "math.h":
+cdef extern from "math.h" nogil:
     int abs(int i)
     double round( double f)
     double ceil( double f)
@@ -22,10 +22,10 @@ cdef extern from "math.h":
     double sin(double x)
     float sinf(float x)
 
-cdef extern from "ads_wrap_system.h":
+cdef extern from "ads_wrap_system.h" nogil:
     int close(int fd)
     size_t write( int fd, void* buf, size_t count)
     
-cdef extern from "stdio.h":
+cdef extern from "stdio.h" nogil:
     size_t fwrite( void* ptr, size_t size, size_t nmemb, FILE* stream)
     
