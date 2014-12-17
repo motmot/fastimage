@@ -236,12 +236,11 @@ cdef class FastImageBase:
         if not c_python.PyFile_Check(fobj):
             raise ValueError('need file object')
         fd = c_python.PyFile_AsFile(fobj)
-        c_python.Py_BEGIN_ALLOW_THREADS
-        for i from 0 <= i < self.imsiz.sz.height:
-            rowptr = self.im+i*self.step
-            nbytes = c_lib.fwrite( rowptr, 1, self.imsiz.sz.width*bytes_per_pixel, fd )
-            nbytes_tot = nbytes_tot+nbytes
-        c_python.Py_END_ALLOW_THREADS
+        with nogil:
+            for i from 0 <= i < self.imsiz.sz.height:
+                rowptr = self.im+i*self.step
+                nbytes = c_lib.fwrite( rowptr, 1, self.imsiz.sz.width*bytes_per_pixel, fd )
+                nbytes_tot = nbytes_tot+nbytes
         return nbytes_tot
 
     property _step:
@@ -571,11 +570,10 @@ cdef class FastImage8u(FastImageBase):
         cdef int index_x, index_y
         cdef ipp.Ipp8u min_val
 
-        c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = ipp.ippiMinIndx_8u_C1R(
-            <ipp.Ipp8u*>self.im,self.step,
-            size.sz, &min_val, &index_x, &index_y)
-        c_python.Py_END_ALLOW_THREADS # acquire GIL
+        with nogil:
+            sts = ipp.ippiMinIndx_8u_C1R(
+                <ipp.Ipp8u*>self.im,self.step,
+                size.sz, &min_val, &index_x, &index_y)
         CHK_HAVEGIL(sts)
         return min_val, index_x, index_y
 
@@ -587,11 +585,10 @@ cdef class FastImage8u(FastImageBase):
 
         sz.width = size.sz.width
         sz.height = size.sz.height
-        c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = fic.ficiMaxIndx_8u_C1R(
-            <fic.Fic8u*>self.im,self.step,
-            sz, &max_val, &index_x, &index_y)
-        c_python.Py_END_ALLOW_THREADS # acquire GIL
+        with nogil:
+            sts = fic.ficiMaxIndx_8u_C1R(
+                <fic.Fic8u*>self.im,self.step,
+                 sz, &max_val, &index_x, &index_y)
         CHK_FIC_HAVEGIL(sts)
         return max_val, index_x, index_y
 
@@ -889,11 +886,10 @@ cdef class FastImage32f(FastImageBase):
 
         sz.width = size.sz.width
         sz.height = size.sz.height
-        c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = fic.ficiMaxIndx_32f_C1R(
-            <fic.Fic32f*>self.im,self.step,
-            sz, &max_val, &index_x, &index_y)
-        c_python.Py_END_ALLOW_THREADS # acquire GIL
+        with nogil:
+            sts = fic.ficiMaxIndx_32f_C1R(
+                <fic.Fic32f*>self.im,self.step,
+                 sz, &max_val, &index_x, &index_y)
         CHK_FIC_HAVEGIL(sts)
         return max_val, index_x, index_y
 
