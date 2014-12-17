@@ -18,6 +18,7 @@ cdef extern from "fic.h":
                                   Fic8u*, int*, int* )
     FicStatus ficiMaxIndx_32f_C1R( Fic32f*, int, FiciSize,
                                    Fic32f*, int*, int* )
+    FicStatus ficiMean_8u_C1R( Fic8u*, int, FiciSize, Fic64f*)
     FicStatus ficiDotProd_8u64f_C1R( Fic8u* pSrc1, int srcStep,
                                      Fic8u* pSrc2, int src2Step,
                                      FiciSize roiSize, Fic64f* pDp )
