@@ -573,7 +573,7 @@ cdef class FastImage8u(FastImageBase):
         with nogil:
             sts = ipp.ippiMinIndx_8u_C1R(
                 <ipp.Ipp8u*>self.im,self.step,
-                size.sz, &min_val, &index_x, &index_y)
+                 size.sz, &min_val, &index_x, &index_y)
         CHK_HAVEGIL(sts)
         return min_val, index_x, index_y
 
