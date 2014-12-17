@@ -230,6 +230,12 @@ cdef extern from "fi_ipp.h" nogil:
         ippMskSize5x1
         ippMskSize5x5
 
+    ctypedef enum IppiBayerGrid:
+        ippiBayerBGGR
+        ippiBayerRGGB
+        ippiBayerGBRG
+        ippiBayerGRBG
+
     ctypedef enum IppCpuType:
         ippCpuUnknown
         ippCpuPP
@@ -267,6 +273,12 @@ cdef extern from "fi_ipp.h" nogil:
         int width
         int height
 
+    ctypedef struct IppiRect:
+        int x
+        int y
+        int width
+        int height
+
     ctypedef struct IppiPoint:
         int x
         int y
@@ -293,6 +305,7 @@ cdef extern from "fi_ipp.h" nogil:
     ctypedef Ipp64f IppiHuMoment_64f[7]
 
     Ipp8u* ippiMalloc_8u_C1( int widthPixels, int heightPixels, int* pStepBytes )
+    Ipp8u* ippiMalloc_8u_C3( int widthPixels, int heightPixels, int* pStepBytes )
     Ipp32f* ippiMalloc_32f_C1( int widthPixels, int heightPixels, int* pStepBytes )
     void ippiFree(void* ptr)
     IppStatus ippiSub_8u_C1IRSfs(Ipp8u* pSrc, int srcStep, Ipp8u* pSrcDst,
@@ -337,6 +350,8 @@ cdef extern from "fi_ipp.h" nogil:
     IppStatus ippiMax_32f_C1R(Ipp32f* pSrc, int srcStep, IppiSize roiSize, Ipp32f* pMax)
     IppStatus ippiCopy_8u_C1R(Ipp8u* pSrc, int srcStep,
                               Ipp8u* pDst, int dstStep, IppiSize roiSize )
+    IppStatus ippiCopy_32f_C1R(Ipp32f* pSrc, int srcStep,
+                               Ipp32f* pDst, int dstStep, IppiSize roiSize )
     IppStatus ippiMulC_32f_C1R(Ipp32f* pSrc, int srcStep, Ipp32f value, Ipp32f* pDst,
                                int dstStep, IppiSize roiSize)
     IppStatus ippiMulC_32f_C1IR(Ipp32f value, Ipp32f* pSrcDst, int srcDstStep,
@@ -434,11 +449,23 @@ cdef extern from "fi_ipp.h" nogil:
     IppStatus ippiAbsDiff_32f_C1R(Ipp32f* pSrc1, int srcStep,
                                   Ipp32f* pSrc2, int src2Step,
                                   Ipp32f* pDst, int dstStep, IppiSize roiSize )
+    IppStatus ippiAbs_32f_C1R(Ipp32f* pSrc, int srcStep,
+                              Ipp32f* pDst, int dstStep,
+                              IppiSize roiSize)
+    IppStatus ippiAbs_32f_C1IR(Ipp32f* pSrcDst, int srcDstStep,
+                               IppiSize roiSize)
+    IppStatus ippiFilterLowpass_8u_C1R(Ipp8u* pSrc, int srcStep,Ipp8u* pDst, int dstStep,IppiSize roiSize,IppiMaskSize maskSize)
     IppStatus ippiFilterSobelHoriz_32f_C1R( Ipp32f *pSrc, int srcStep, Ipp32f *pDst, int dstStep, IppiSize dstRoiSize )
     IppStatus ippiFilterSobelVert_32f_C1R ( Ipp32f *pSrc, int srcStep, Ipp32f *pDst, int dstStep, IppiSize dstRoiSize )
     IppStatus ippiFilterSobelHoriz_8u_C1R( Ipp8u *pSrc, int srcStep, Ipp8u *pDst, int dstStep, IppiSize dstRoiSize )
     IppStatus ippiFilterSobelVert_8u_C1R ( Ipp8u *pSrc, int srcStep, Ipp8u *pDst, int dstStep, IppiSize dstRoiSize )
 
+    IppStatus ippiCFAToRGB_8u_C1C3R(Ipp8u *pSrc, IppiRect srcRoi, IppiSize srcSize, int srcStep, Ipp8u *pDst, int dstStep, IppiBayerGrid bayerGrid, int interpolation)
+    IppStatus ippiColorToGray_8u_C3C1R(Ipp8u *pSrc, int srcStep, Ipp8u *pDst, int dstStep, IppiSize roiSize, Ipp32f coeffs[3])
+    IppStatus ippiRGBToGray_8u_C3C1R(Ipp8u *pSrc, int srcStep, Ipp8u *pDst, int dstStep, IppiSize roiSize)
+    IppStatus ippiRGBToHSV_8u_C3R(Ipp8u *pSrc, int srcStep, Ipp8u *pDst, int dstStep, IppiSize roiSize)
+    IppStatus ippiMul_8u_C1IRSfs(Ipp8u *pSrc, int srcStep, Ipp8u *pSrcDst, int srcDstStep, IppiSize roiSize, int scaleFactor)
+    IppStatus ippiErode3x3_8u_C1IR( Ipp8u* pSrcDst, int srcDstStep, IppiSize roiSize)
     IppStatus ippiDilate3x3_8u_C1R( Ipp8u  *pSrc, int srcStep, Ipp8u  *pDst, int dstStep, IppiSize roiSize )
     IppStatus ippiDilate3x3_8u_C1IR( Ipp8u  *pSrc, int srcStep, IppiSize roiSize )
 
