@@ -7,7 +7,7 @@
 # WARNING   WARNING   WARNING
 
 #cdef extern from "ippdefs.h":
-cdef extern from "fi_ipp.h":
+cdef extern from "fi_ipp.h" nogil:
     ctypedef enum IppStatus:
         ippStsNotSupportedModeErr
         ippStsCpuNotSupportedErr
