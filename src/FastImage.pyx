@@ -377,10 +377,9 @@ cdef class FastImage8u(FastImageBase):
         inter = <PyArrayInterface*>c_python.PyCObject_AsVoidPtr(cobj)
         assert inter.two==2
 
-        c_python.Py_BEGIN_ALLOW_THREADS
-        sts =ipp.ippiHistogramRange_8u_C1R(<ipp.Ipp8u*>self.im, self.step, self.imsiz.sz,
-                                           <ipp.Ipp32s*>&(inter.data[0]), &(hist_levels[0]), 257 )
-        c_python.Py_END_ALLOW_THREADS
+        with nogil:
+            sts =ipp.ippiHistogramRange_8u_C1R(<ipp.Ipp8u*>self.im, self.step, self.imsiz.sz,
+                                                <ipp.Ipp32s*>&(inter.data[0]), &(hist_levels[0]), 257 )
         CHK_HAVEGIL(sts)
         return hist
 
@@ -435,13 +434,12 @@ cdef class FastImage8u(FastImageBase):
         result is normalized"""
         cdef ipp.IppStatus sts
 
-        c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = ipp.ippiCrossCorrSame_Norm_8u32f_C1R( <ipp.Ipp8u*>self.im, self.step,
-                                                    source_size.sz,
-                                                    <ipp.Ipp8u*>other.im, other.step,
-                                                    other_size.sz,
-                                                    <ipp.Ipp32f*>result.im, result.step)
-        c_python.Py_END_ALLOW_THREADS # release GIL
+        with nogil:
+            sts = ipp.ippiCrossCorrSame_Norm_8u32f_C1R( <ipp.Ipp8u*>self.im, self.step,
+                                                         source_size.sz,
+                                                         <ipp.Ipp8u*>other.im, other.step,
+                                                         other_size.sz,
+                                                         <ipp.Ipp32f*>result.im, result.step)
         CHK_HAVEGIL(sts)
 
     def get_crosscorr_same_norm_32f( self, Size source_size,
@@ -466,14 +464,13 @@ cdef class FastImage8u(FastImageBase):
         result is normalized"""
         cdef ipp.IppStatus sts
 
-        c_python.Py_BEGIN_ALLOW_THREADS # release GIL
-        sts = ipp.ippiCrossCorrSame_Norm_8u_C1RSfs( <ipp.Ipp8u*>self.im, self.step,
-                                                    source_size.sz,
-                                                    <ipp.Ipp8u*>other.im, other.step,
-                                                    other_size.sz,
-                                                    <ipp.Ipp8u*>result.im, result.step,
-                                                    scale_factor )
-        c_python.Py_END_ALLOW_THREADS # release GIL
+        with nogil:
+            sts = ipp.ippiCrossCorrSame_Norm_8u_C1RSfs( <ipp.Ipp8u*>self.im, self.step,
+                                                         source_size.sz,
+                                                         <ipp.Ipp8u*>other.im, other.step,
+                                                         other_size.sz,
+                                                         <ipp.Ipp8u*>result.im, result.step,
+                                                         scale_factor )
         CHK_HAVEGIL(sts)
 
     def get_crosscorr_same_norm_scaled_8u( self, Size source_size,
