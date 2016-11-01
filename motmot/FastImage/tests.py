@@ -1,6 +1,6 @@
 import pkg_resources
 import unittest
-import FastImage as fi
+import motmot.FastImage.FastImage as fi
 import numpy as np
 
 class TestIPP(unittest.TestCase):
