@@ -560,22 +560,6 @@ cdef class FastImage8u(FastImageBase):
         CHK_FIC_HAVEGIL( fic.ficiFilterSobelVert_8u_C1R(<fic.Fic8u*>self.im, self.step, <fic.Fic8u*>dest.im, dest.step, sz ))
         return dest
 
-    def gauss3x3(self,Size size):
-        cdef FastImage8u out
-        out = FastImage8u(size)
-        CHK_HAVEGIL( ipp.ippiFilterGauss_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
-                                                <ipp.Ipp8u*>out.im, out.step,
-                                                size.sz, ipp.ippMskSize3x3 ))
-        return out
-
-    def gauss5x5(self,Size size):
-        cdef FastImage8u out
-        out = FastImage8u(size)
-        CHK_HAVEGIL( ipp.ippiFilterGauss_8u_C1R(<ipp.Ipp8u*>self.im, self.step,
-                                                <ipp.Ipp8u*>out.im, out.step,
-                                                size.sz, ipp.ippMskSize5x5 ))
-        return out
-
 cdef class FastImage32f(FastImageBase):
 
     def __cinit__(self,*args,**kw):

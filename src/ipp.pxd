@@ -458,7 +458,6 @@ cdef extern from "fi_ipp.h" nogil:
     IppStatus ippiMul_8u_C1IRSfs(Ipp8u *pSrc, int srcStep, Ipp8u *pSrcDst, int srcDstStep, IppiSize roiSize, int scaleFactor)
     IppStatus ippiErode3x3_8u_C1IR( Ipp8u* pSrcDst, int srcDstStep, IppiSize roiSize)
 
-    IppStatus ippiFilterGauss_8u_C1R( Ipp8u   *pSrc, int srcStep, Ipp8u  *pDst, int dstStep, IppiSize dstRoiSize, IppiMaskSize maskSize )
 #cdef extern from "ipps.h":
     IppStatus ippSetFlushToZero( int value, unsigned int* pUMask )
     IppStatus ippSetDenormAreZeros( int value )
