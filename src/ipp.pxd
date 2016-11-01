@@ -408,15 +408,6 @@ cdef extern from "fi_ipp.h" nogil:
     IppStatus ippiGetHuMoments_64f(IppiMomentState_64f* pState,
                                    int nChannel, IppiHuMoment_64f pHm)
 
-    IppStatus ippiCrossCorrSame_Norm_8u32f_C1R( Ipp8u* pSrc, int srcStep,
-                                                IppiSize srcRoiSize,
-                                                Ipp8u* pTpl, int tplStep, IppiSize tplRoiSize,
-                                                Ipp32f* pDst, int dstStep )
-    IppStatus ippiCrossCorrSame_Norm_8u_C1RSfs( Ipp8u* pSrc, int srcStep,
-                                                IppiSize srcRoiSize, Ipp8u* pTpl,
-                                                int tplStep, IppiSize tplRoiSize,
-                                                Ipp8u* pDst, int dstStep, int scaleFactor )
-
     IppStatus ippiHistogramRange_8u_C1R(Ipp8u* pSrc, int srcStep, IppiSize roiSize,
                                         Ipp32s* pHist, Ipp32s* pLevels, int nLevels)
 

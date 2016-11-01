@@ -425,67 +425,6 @@ cdef class FastImage8u(FastImageBase):
                                          <ipp.Ipp8u*>result.im, result.step,
                                          size.sz ))
 
-    def get_crosscorr_same_norm_put_32f( self, Size source_size,
-                                                FastImage8u other, Size other_size,
-                                                FastImage32f result, int scale_factor ):
-        """result = CrossCorr(self,other)
-
-        result has same dimensions as self
-        result is normalized"""
-        cdef ipp.IppStatus sts
-
-        with nogil:
-            sts = ipp.ippiCrossCorrSame_Norm_8u32f_C1R( <ipp.Ipp8u*>self.im, self.step,
-                                                         source_size.sz,
-                                                         <ipp.Ipp8u*>other.im, other.step,
-                                                         other_size.sz,
-                                                         <ipp.Ipp32f*>result.im, result.step)
-        CHK_HAVEGIL(sts)
-
-    def get_crosscorr_same_norm_32f( self, Size source_size,
-                                     FastImage8u other, Size other_size,
-                                     int scale_factor ):
-        """result = CrossCorr(self,other)
-
-        result has same dimensions as self
-        result is normalized"""
-        cdef FastImage32f result
-        result = FastImage32f( source_size )
-        self.get_crosscorr_same_norm_put_32f( source_size, other, other_size,
-                                              result, scale_factor )
-        return result
-
-    def get_crosscorr_same_norm_scaled_put_8u( self, Size source_size,
-                                               FastImage8u other, Size other_size,
-                                               FastImage8u result, int scale_factor ):
-        """result = CrossCorr(self,other)
-
-        result has same dimensions as self
-        result is normalized"""
-        cdef ipp.IppStatus sts
-
-        with nogil:
-            sts = ipp.ippiCrossCorrSame_Norm_8u_C1RSfs( <ipp.Ipp8u*>self.im, self.step,
-                                                         source_size.sz,
-                                                         <ipp.Ipp8u*>other.im, other.step,
-                                                         other_size.sz,
-                                                         <ipp.Ipp8u*>result.im, result.step,
-                                                         scale_factor )
-        CHK_HAVEGIL(sts)
-
-    def get_crosscorr_same_norm_scaled_8u( self, Size source_size,
-                                           FastImage8u other, Size other_size,
-                                           int scale_factor ):
-        """result = CrossCorr(self,other)
-
-        result has same dimensions as self
-        result is normalized"""
-        cdef FastImage8u result
-        result = FastImage8u( source_size )
-        self.get_crosscorr_same_norm_scaled_put_8u( source_size, other, other_size,
-                                                    result, scale_factor )
-        return result
-
     def get_absdiff_put(self,FastImage8u other,FastImage8u result,Size size):
         """result = |self - other|"""
         CHK_HAVEGIL( ipp.ippiAbsDiff_8u_C1R(<ipp.Ipp8u*>other.im, other.step,
