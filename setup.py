@@ -16,7 +16,7 @@ setup(name="motmot.FastImage",
       "Integrated Performance Primitives (Intel IPP) library",
       url='http://code.astraw.com/projects/motmot',
       license="BSD",
-      version='0.5.6.ipp', # also in motmot/FastImage/__init__.py
+      version='0.6.0', # also in motmot/FastImage/__init__.py
       namespace_packages=['motmot'],
       packages = find_packages(),
       ext_modules=cythonize([Extension(name="motmot.FastImage.FastImage",
