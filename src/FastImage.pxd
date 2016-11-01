@@ -66,4 +66,3 @@ cdef class convert_to_8u(LazyOp):
 
 cdef class convert_to_32f(LazyOp):
     cdef FastImage8u orig8u
-

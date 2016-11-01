@@ -49,7 +49,7 @@ int main( int argc, char ** argv ) {
   n_iter = 10000;
   my_size.sz.width = 656;
   my_size.sz.height = 491;
-  
+
   my_init(&running_mean_im,my_size);
   my_init(&mean2,my_size);
 
@@ -63,7 +63,7 @@ int main( int argc, char ** argv ) {
     /* start timer */
     start = time(NULL);
     for (j=0; i<n_iter; j++) {
-      
+
       CHK(ippiSqr_32f_C1R( (Ipp32f*)running_mean_im.im, running_mean_im.step,
 			   (Ipp32f*)mean2.im, mean2.step,
 			   my_size.sz));

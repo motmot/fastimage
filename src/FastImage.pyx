@@ -1070,4 +1070,3 @@ cdef class convert_to_8u(LazyOp):
 cdef class convert_to_32f(LazyOp):
     def __init__(self, FastImage8u orig8u):
         self.orig8u = orig8u
-
