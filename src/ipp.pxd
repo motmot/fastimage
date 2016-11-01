@@ -408,9 +408,6 @@ cdef extern from "fi_ipp.h" nogil:
     IppStatus ippiGetHuMoments_64f(IppiMomentState_64f* pState,
                                    int nChannel, IppiHuMoment_64f pHm)
 
-    IppStatus ippiHistogramRange_8u_C1R(Ipp8u* pSrc, int srcStep, IppiSize roiSize,
-                                        Ipp32s* pHist, Ipp32s* pLevels, int nLevels)
-
     IppStatus ippiHistogramEven_8u_C1R(Ipp8u* pSrc, int srcStep, IppiSize roiSize,
                                        Ipp32s* pHist, Ipp32s* pLevels,
                                        int nLevels, Ipp32s lowerLevel, Ipp32s upperLevel)

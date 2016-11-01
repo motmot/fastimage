@@ -365,24 +365,6 @@ cdef class FastImage8u(FastImageBase):
             self.show_mem_and_step()
         self.view = 0
 
-    def histogram(self):
-        cdef PyArrayInterface* inter
-        cdef ipp.IppStatus sts
-
-        hist = numpy.empty((256,),dtype=numpy.int32)
-        cobj = hist.__array_struct__
-
-        if not c_python.PyCObject_Check(cobj):
-            raise TypeError("expected CObject")
-        inter = <PyArrayInterface*>c_python.PyCObject_AsVoidPtr(cobj)
-        assert inter.two==2
-
-        with nogil:
-            sts =ipp.ippiHistogramRange_8u_C1R(<ipp.Ipp8u*>self.im, self.step, self.imsiz.sz,
-                                                <ipp.Ipp32s*>&(inter.data[0]), &(hist_levels[0]), 257 )
-        CHK_HAVEGIL(sts)
-        return hist
-
     def set_val(self, int val, Size size):
         CHK_HAVEGIL( ipp.ippiSet_8u_C1R( val, <ipp.Ipp8u*>self.im, self.step, size.sz ))
 
