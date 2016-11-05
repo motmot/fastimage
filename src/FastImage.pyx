@@ -550,18 +550,6 @@ cdef class FastImage8u(FastImageBase):
                                             size.sz,
                                             ipp.ippCmpGreater))
 
-    def __imod__(self, object other):
-        cdef FastImage32f other32f
-        cdef convert_to_8u convert_to_8u_op
-        if type(other) == convert_to_8u:
-            convert_to_8u_op = other
-            other32f = convert_to_8u_op.orig32f
-            assert self.imsiz == other32f.imsiz
-            other32f.get_8u_copy_put(self,self.imsiz)
-        else:
-            raise TypeError('cannot mod type in-place')
-        return self
-
     def min_index(self, Size size):
         cdef ipp.IppStatus sts
         cdef int index_x, index_y
@@ -845,36 +833,6 @@ cdef class FastImage32f(FastImageBase):
             raise ValueError("only 2 and 0.5 powers supported")
         return xself
 
-    def __iadd__(self, object other):
-        cdef FastImage8u other8u_base
-        cdef square square_op
-        if type(other) == square:
-            square_op = other
-            other8u_base = square_op.base
-            assert self.imsiz == other8u_base.imsiz
-            self.toself_add_square( other8u_base, self.imsiz)
-        else:
-            raise TypeError('cannot add type in-place')
-        return self
-
-    def __imod__(self, object other):
-        cdef FastImage8u other8u
-        cdef blend_with blend_width_op
-        cdef convert_to_32f convert_to_32f_op
-        if type(other) == blend_with:
-            blend_width_op = other
-            other8u = blend_width_op.other8u
-            assert self.imsiz == other8u.imsiz
-            self.toself_add_weighted( other8u, self.imsiz, blend_width_op.alpha)
-        elif type(other) == convert_to_32f:
-            convert_to_32f_op = other
-            other8u = convert_to_32f_op.orig8u
-            assert self.imsiz == other8u.imsiz
-            other8u.get_32f_copy_put(self,self.imsiz)
-        else:
-            raise TypeError('cannot mod type in-place')
-        return self
-
     def max_index(self, Size size):
         cdef fic.FicStatus sts
         cdef int index_x, index_y
@@ -1033,40 +991,3 @@ def copy( object arr ):
                       inter.shape[1]*result.strides[1] )
 
     return result
-
-# Some experimental lazy operators to support fast arithmetic using
-# normal symbols (e.g. +=).
-
-cdef class LazyOp:
-    pass
-
-##############################
-
-cdef class square(LazyOp):
-    def __init__(self, FastImageBase base):
-        self.base = base
-
-    def __call__(self):
-        return self.base.get_square(self.base,self.base.imsiz)
-
-cdef class sqrt(LazyOp):
-    def __init__(self, FastImageBase base):
-        self.base = base
-
-    def __call__(self):
-        return self.base.get_sqrt(self.base,self.base.imsiz)
-
-# for use with %= ############
-
-cdef class blend_with(LazyOp):
-    def __init__(self, FastImage8u other8u, float alpha):
-        self.other8u = other8u
-        self.alpha = alpha
-
-cdef class convert_to_8u(LazyOp):
-    def __init__(self, FastImage32f orig32f):
-        self.orig32f = orig32f
-
-cdef class convert_to_32f(LazyOp):
-    def __init__(self, FastImage8u orig8u):
-        self.orig8u = orig8u

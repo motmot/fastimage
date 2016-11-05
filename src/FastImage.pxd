@@ -42,27 +42,3 @@ cdef class FastImage32f(FastImageBase):
     cdef void fast_get_subtracted_put(self,FastImage32f other,FastImage32f result,Size size)
     cdef void fast_toself_multiply(self, float val, Size size)
     cdef FastImage32f create_equal_shape_empty(self, Size size)
-
-# Some experimental lazy operators to support fast arithmetic using
-# normal symbols (e.g. +=).
-
-cdef class LazyOp:
-    pass
-
-cdef class square(LazyOp):
-    cdef FastImageBase base
-
-cdef class sqrt(LazyOp):
-    cdef FastImageBase base
-
-# for use with %= ############
-
-cdef class blend_with(LazyOp):
-    cdef FastImage8u other8u
-    cdef float alpha
-
-cdef class convert_to_8u(LazyOp):
-    cdef FastImage32f orig32f
-
-cdef class convert_to_32f(LazyOp):
-    cdef FastImage8u orig8u
