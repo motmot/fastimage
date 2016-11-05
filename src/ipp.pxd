@@ -389,8 +389,10 @@ cdef extern from "fi_ipp.h" nogil:
                               IppiSize roiSize, int scaleFactor)
     IppStatus ippiSqrt_32f_C1IR(Ipp32f* pSrcDst, int srcDstStep,
                                 IppiSize roiSize)
-    IppStatus ippiMomentInitAlloc_64f(IppiMomentState_64f** pState, IppHintAlgorithm hint)
-    IppStatus ippiMomentFree_64f(IppiMomentState_64f* pState)
+    IppStatus ippiMomentGetStateSize_64f(IppHintAlgorithm hint,int* stateSize)
+    void* ippMalloc(int size)
+    void ippFree(void* ptr)
+    IppStatus ippiMomentInit_64f(IppiMomentState_64f* pState, IppHintAlgorithm hint)
     IppStatus ippiMoments64f_8u_C1R( Ipp8u*  pSrc, int srcStep, IppiSize roiSize, IppiMomentState_64f* pCtx)
     IppStatus ippiMoments64f_32f_C1R(Ipp32f* pSrc, int srcStep, IppiSize roiSize, IppiMomentState_64f* pCtx)
     IppStatus ippiGetSpatialMoment_64f(IppiMomentState_64f* pState,
