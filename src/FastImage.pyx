@@ -704,17 +704,6 @@ cdef class FastImage32f(FastImageBase):
         CHK_HAVEGIL( ipp.ippiMulC_32f_C1R(<ipp.Ipp32f*>self.im, self.step,  val,
                                           <ipp.Ipp32f*>other.im,other.step, size.sz))
 
-    def __ipow__(x,y):
-        cdef FastImage32f xself
-        xself = x
-        if y == 2:
-            xself.toself_square(xself.imsiz)
-        elif y==0.5:
-            xself.toself_sqrt(xself.imsiz)
-        else:
-            raise ValueError("only 2 and 0.5 powers supported")
-        return xself
-
     def pow(self,y):
         cdef FastImage32f xself
         xself = copy(self)

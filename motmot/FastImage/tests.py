@@ -457,31 +457,6 @@ class TestFastImage32f(unittest.TestCase):
         self.assert_( np.allclose(arB, np.asarray(imB)))
         self.assert_( np.allclose(arC, np.asarray(imC)))
 
-    def test_ipow(self):
-        sz = fi.Size(2,2)
-
-        imA=fi.FastImage32f(sz)
-        imA.set_val(2,sz)
-
-        arA = np.array(imA)
-        imA **= 2
-        arA **= 2
-        self.assert_( np.allclose(arA, np.asarray(imA)))
-        imA **= 0.5
-        arA **= 0.5
-        self.assert_( np.allclose(arA, np.asarray(imA)))
-
-    def test_iadd(self):
-        sz = fi.Size(2,2)
-
-        imA=fi.FastImage32f(sz)
-        imA.set_val(2,sz)
-
-        imB=fi.FastImage8u(sz)
-        imB.set_val(3,sz)
-
-        imA += fi.square(imB)
-
     ## def test_min_index(self):
     ##     sz = fi.Size(5,5)
     ##     L = fi.FastImage32f(sz)
