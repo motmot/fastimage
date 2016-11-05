@@ -41,6 +41,7 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
     incdirname = 'include'
     ipp_define_macros = []
     ipp_extra_link_args = []
+    ipp_extra_objects = []
     if sys.platform.startswith('win'):
         ipp_define_macros = [('FASTIMAGE_IPP_ARCH','\\"%s\\"'%ipp_arch)]
     else:
@@ -48,18 +49,26 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
     ipp_include_dirs = [os.path.join(IPPROOT,incdirname)]
 
     #  like LDFLAGS in sample Makefile.osx
-    ipp_library_dirs = [ os.path.join(IPPROOT,libdirname) ]
-    ipp_libraries = ['ippi','ipps','ippcv','ippcc']
+
+    if ipp_static:
+        ipp_library_dirs = []
+        ipp_libraries = []
+        libdir = os.path.join(IPPROOT,libdirname)
+        ipp_extra_objects = [os.path.join(libdir,'lib'+lib+'.a') for lib in 'ippi','ipps','ippcv','ippcc','ippcore']
+    else:
+        ipp_library_dirs = [ os.path.join(IPPROOT,libdirname) ]
+        ipp_libraries = ['ippi','ipps','ippcv','ippcc','ippcore']
+        ipp_extra_objects = []
+
     LIB_ARCH=''
     if sys.platform.startswith('linux') and ipp_arch == 'em64t':
         LIB_ARCH=ipp_arch
     ARPOSTFIX='a'
     LIBPREFIX='lib'
-    ipp_libraries.append('ippcore')
     vals['extra_link_args'] = ipp_extra_link_args
     vals['ipp_library_dirs'] = ipp_library_dirs
     vals['ipp_libraries'] = ipp_libraries
     vals['ipp_define_macros'] = ipp_define_macros
     vals['ipp_include_dirs'] = ipp_include_dirs
-
+    vals['ipp_extra_objects'] = ipp_extra_objects
     return vals

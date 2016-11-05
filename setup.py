@@ -15,6 +15,7 @@ ipp_libraries = vals.get('ipp_libraries',[])
 ipp_define_macros = vals.get('ipp_define_macros',[])
 ipp_extra_link_args = vals.get('extra_link_args',[])
 ipp_extra_compile_args = vals.get('extra_compile_args',[])
+ipp_extra_objects = vals.get('ipp_extra_objects',[])
 
 setup(name="motmot.FastImage",
       author="Andrew Straw",
@@ -35,6 +36,7 @@ setup(name="motmot.FastImage",
                                        define_macros=ipp_define_macros,
                                        extra_link_args=ipp_extra_link_args,
                                        extra_compile_args=ipp_extra_compile_args,
+                                       extra_objects=ipp_extra_objects,
                                        ),
                              ]),
 )
