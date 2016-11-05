@@ -8,7 +8,6 @@ class TestIPP(unittest.TestCase):
         major,minor,build = fi.get_IPP_version()
     def test_arch(self):
         arch = fi.get_IPP_arch()
-        assert arch in ['em64t','ia32']
     def test_static(self):
         result = fi.get_IPP_static()
 

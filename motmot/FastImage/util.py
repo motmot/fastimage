@@ -8,7 +8,7 @@ def get_build_info(ipp_static=True,  # static build requires static IPP libs
 
 ipp_static - True to build using static IPP library (requires IPP license)
 ipp_version - Version number of IPP to use (None uses default, '5.2' is one option)
-ipp_arch - Architecture of IPP to use (None uses default, 'em64t' and 'ia32' are options)
+ipp_arch - Architecture of IPP to use (None uses default, 'intel64' and 'ia32' are options)
 system_install - (Linux only) True if IPP installed in /usr, False if in /opt
 """
 
@@ -20,10 +20,10 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
 
     if ipp_arch is None:
         if sys.platform == 'darwin':
-            ipp_arch = 'em64t' # assume this is a recent Mac
+            ipp_arch = 'intel64'
         elif sys.platform.startswith('linux'):
             if machine == 'x86_64':
-                ipp_arch = 'em64t'
+                ipp_arch = 'intel64'
             elif machine in ['i386','i686']:
                 ipp_arch = 'ia32'
             else:
