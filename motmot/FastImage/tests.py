@@ -193,21 +193,6 @@ class TestFastImage8u(unittest.TestCase):
         self.assert_( np.allclose(arC, np.asarray(imC)))
         self.assert_( np.allclose(arD, np.asarray(imD)))
 
-    def test_iconvert(self):
-        sz = fi.Size(2,2)
-
-        imB=fi.FastImage32f(sz)
-        imB.set_val(3.2,sz)
-
-        imA=fi.FastImage8u(sz)
-        imA %= fi.convert_to_8u(imB)
-
-        arB=3.2*np.ones((2,2),np.float32)
-        arA=(3*np.ones((2,2))).astype(np.uint8)
-
-        self.assert_( np.allclose(arA, np.asarray(imA)))
-        self.assert_( np.allclose(arB, np.asarray(imB)))
-
     def test_min_index(self):
         sz = fi.Size(5,5)
         L = fi.FastImage8u(sz)
@@ -496,16 +481,6 @@ class TestFastImage32f(unittest.TestCase):
         imB.set_val(3,sz)
 
         imA += fi.square(imB)
-
-    def test_iconvert(self):
-        sz = fi.Size(2,2)
-
-        imA=fi.FastImage32f(sz)
-
-        imB=fi.FastImage8u(sz)
-        imB.set_val(3,sz)
-
-        imA %= fi.convert_to_32f(imB)
 
     ## def test_min_index(self):
     ##     sz = fi.Size(5,5)
