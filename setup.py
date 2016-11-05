@@ -6,7 +6,7 @@ from Cython.Build import cythonize
 sys.path.insert(0, os.path.abspath(os.path.join('motmot','FastImage')))
 import util as FastImage_util
 
-vals = FastImage_util.get_build_info(ipp_static=False)
+vals = FastImage_util.get_build_info(ipp_static=True)
 
 ipp_sources = vals.get('ipp_sources',[])
 ipp_include_dirs = vals.get('ipp_include_dirs',[])
