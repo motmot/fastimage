@@ -49,6 +49,9 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
         ipp_define_macros = [('FASTIMAGE_IPP_ARCH','\\"%s\\"'%ipp_arch)]
     else:
         ipp_define_macros = [('FASTIMAGE_IPP_ARCH','"%s"'%ipp_arch)]
+
+    if ipp_static:
+        ipp_define_macros.append( ('FASTIMAGE_STATICIPP','1') )
     ipp_include_dirs = [os.path.join(IPPROOT,incdirname)]
 
     #  like LDFLAGS in sample Makefile.osx
