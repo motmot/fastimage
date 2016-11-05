@@ -37,7 +37,10 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
 
     IPPROOT = os.environ['IPPROOT']
 
-    libdirname = 'lib'
+    if sys.platform.startswith('linux'):
+        libdirname = 'lib/intel64_lin'
+    else:
+        libdirname = 'lib'
     incdirname = 'include'
     ipp_define_macros = []
     ipp_extra_link_args = []
