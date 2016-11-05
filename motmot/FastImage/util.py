@@ -63,11 +63,6 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
         ipp_libraries = ['ippi','ipps','ippcv','ippcc','ippcore']
         ipp_extra_objects = []
 
-    LIB_ARCH=''
-    if sys.platform.startswith('linux') and ipp_arch == 'em64t':
-        LIB_ARCH=ipp_arch
-    ARPOSTFIX='a'
-    LIBPREFIX='lib'
     vals['extra_link_args'] = ipp_extra_link_args
     vals['ipp_library_dirs'] = ipp_library_dirs
     vals['ipp_libraries'] = ipp_libraries
