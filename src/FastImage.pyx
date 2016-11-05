@@ -49,7 +49,7 @@ cdef extern from "FastImage_macros.h":
 
     char* ippGetStatusString( ipp.IppStatus StsCode )
 
-    cdef void InitStaticIfNecessary()
+    cdef void InitIPP()
 
     ctypedef struct ipp_version_struct_t:
         int major
@@ -60,7 +60,7 @@ cdef extern from "FastImage_macros.h":
     cdef char* GetIPPArch()
     cdef int IsIPPStatic()
 
-InitStaticIfNecessary()
+InitIPP()
 
 def get_IPP_version():
     cdef ipp_version_struct_t val
