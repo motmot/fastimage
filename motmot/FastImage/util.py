@@ -1,27 +1,21 @@
 import glob, os, sys
 
 def get_build_info(ipp_static=True,  # static build requires static IPP libs
-                   ipp_version=None,
                    ipp_arch=None,
-                   system_install=True):
+                   ipp_root=None,
+                   ):
     """get options to build Python extensions built with Intel IPP
 
 ipp_static - True to build using static IPP library (requires IPP license)
-ipp_version - Version number of IPP to use (None uses default, '5.2' is one option)
 ipp_arch - Architecture of IPP to use (None uses default, 'intel64' and 'ia32' are options)
-system_install - (Linux only) True if IPP installed in /usr, False if in /opt
+ipp_root - Root location of the IPP installation (e.g. /opt/intel/compilers_and_libraries/linux/ipp)
 """
-
-    if ipp_version is None:
-        ipp_version = '5.2'
-
-    if hasattr(os,'uname'):
-        machine = os.uname()[4]
 
     if ipp_arch is None:
         if sys.platform == 'darwin':
             ipp_arch = 'intel64'
         elif sys.platform.startswith('linux'):
+            machine = os.uname()[4]
             if machine == 'x86_64':
                 ipp_arch = 'intel64'
             elif machine in ['i386','i686']:
@@ -34,8 +28,6 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
             raise NotImplementedError("auto-architecture detection not implemented on this platform")
 
     vals = {}
-
-    IPPROOT = os.environ['IPPROOT']
 
     if sys.platform.startswith('linux'):
         libdirname = 'lib/%s_lin' % ipp_arch
@@ -52,17 +44,17 @@ system_install - (Linux only) True if IPP installed in /usr, False if in /opt
 
     if ipp_static:
         ipp_define_macros.append( ('FASTIMAGE_STATICIPP','1') )
-    ipp_include_dirs = [os.path.join(IPPROOT,incdirname)]
+    ipp_include_dirs = [os.path.join(ipp_root,incdirname)]
 
     #  like LDFLAGS in sample Makefile.osx
 
     if ipp_static:
         ipp_library_dirs = []
         ipp_libraries = []
-        libdir = os.path.join(IPPROOT,libdirname)
+        libdir = os.path.join(ipp_root,libdirname)
         ipp_extra_objects = [os.path.join(libdir,'lib'+lib+'.a') for lib in 'ippi','ipps','ippcv','ippcc','ippcore']
     else:
-        ipp_library_dirs = [ os.path.join(IPPROOT,libdirname) ]
+        ipp_library_dirs = [ os.path.join(ipp_root,libdirname) ]
         ipp_libraries = ['ippi','ipps','ippcv','ippcc','ippcore']
         ipp_extra_objects = []
 

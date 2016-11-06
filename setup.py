@@ -6,16 +6,8 @@ from Cython.Build import cythonize
 sys.path.insert(0, os.path.abspath(os.path.join('motmot','FastImage')))
 import util as FastImage_util
 
-vals = FastImage_util.get_build_info(ipp_static=True)
-
-ipp_sources = vals.get('ipp_sources',[])
-ipp_include_dirs = vals.get('ipp_include_dirs',[])
-ipp_library_dirs = vals.get('ipp_library_dirs',[])
-ipp_libraries = vals.get('ipp_libraries',[])
-ipp_define_macros = vals.get('ipp_define_macros',[])
-ipp_extra_link_args = vals.get('extra_link_args',[])
-ipp_extra_compile_args = vals.get('extra_compile_args',[])
-ipp_extra_objects = vals.get('ipp_extra_objects',[])
+ipp_root = os.environ['IPPROOT']
+vals = FastImage_util.get_build_info(ipp_static=True, ipp_root=ipp_root)
 
 setup(name="motmot.FastImage",
       author="Andrew Straw",
@@ -29,14 +21,13 @@ setup(name="motmot.FastImage",
       packages = find_packages(),
       ext_modules=cythonize([Extension(name="motmot.FastImage.FastImage",
                                        sources=['src/FastImage.pyx',
-                                                'src/fic.c','src/fic_sobel.c']+ipp_sources,
-                                       include_dirs=ipp_include_dirs,
-                                       library_dirs=ipp_library_dirs,
-                                       libraries=ipp_libraries,
-                                       define_macros=ipp_define_macros,
-                                       extra_link_args=ipp_extra_link_args,
-                                       extra_compile_args=ipp_extra_compile_args,
-                                       extra_objects=ipp_extra_objects,
+                                                'src/fic.c','src/fic_sobel.c'],
+                                       include_dirs=vals['ipp_include_dirs'],
+                                       library_dirs=vals['ipp_library_dirs'],
+                                       libraries=vals['ipp_libraries'],
+                                       define_macros=vals['ipp_define_macros'],
+                                       extra_link_args=vals['extra_link_args'],
+                                       extra_objects=vals['ipp_extra_objects'],
                                        ),
                              ]),
 )
