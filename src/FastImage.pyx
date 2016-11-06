@@ -47,7 +47,7 @@ cdef extern from "FastImage_macros.h":
     ipp.Ipp32f* IMPOS32f( ipp.Ipp32f* im, int step, int bottom, int left)
     void CHK_NOGIL( ipp.IppStatus errval )
 
-    char* ippGetStatusString( ipp.IppStatus StsCode )
+    const char* ippGetStatusString( ipp.IppStatus StsCode )
 
     cdef void InitIPP()
 
@@ -57,7 +57,7 @@ cdef extern from "FastImage_macros.h":
         int build
 
     cdef ipp_version_struct_t GetIPPVersion()
-    cdef char* GetIPPArch()
+    cdef const char* GetIPPArch()
     cdef int IsIPPStatic()
 
 InitIPP()
@@ -68,7 +68,7 @@ def get_IPP_version():
     return val.major, val.minor, val.build
 
 def get_IPP_arch():
-    cdef char* arch_str
+    cdef const char* arch_str
     arch_str = GetIPPArch()
     return arch_str
 
@@ -77,7 +77,7 @@ def get_IPP_static():
 
 class IppError(Exception):
     def __init__(self, int errval):
-        cdef char* cmsg
+        cdef const char* cmsg
         cmsg = ippGetStatusString(<ipp.IppStatus>errval)
         #Exception.__init__(self,"Error %d: %s"%(errval,cmsg))
         Exception.__init__(self,cmsg)
