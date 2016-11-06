@@ -1,1 +1,1 @@
-__version__='0.6.0' # also in setup.py
+__version__='0.6.1' # also in setup.py
