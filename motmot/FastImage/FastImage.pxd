@@ -1,6 +1,9 @@
 #emacs, this is -*-Python-*- mode
 
-cimport c_python
+cimport cpython.ref
+cimport cpython.cobject
+cimport c_python2
+cimport numpy
 cimport ipp
 cimport fic
 
@@ -14,8 +17,8 @@ cdef class Point:
 
 cdef class FastImageBase:
     cdef fiptr im
-    cdef c_python.Py_intptr_t shape[2] # don't use, purely for making __array_struct__ without extra malloc
-    cdef c_python.Py_intptr_t strides[2]
+    cdef numpy.Py_intptr_t shape[2] # don't use, purely for making __array_struct__ without extra malloc
+    cdef numpy.Py_intptr_t strides[2]
     cdef int step # int copy of strides[0], (this could be a problem where int != intptr_t)
     cdef int view
     cdef object basetype

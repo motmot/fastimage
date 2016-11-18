@@ -100,13 +100,13 @@ ctypedef struct PyArrayInterface:
     char typekind                 # kind in array --- character code of typestr
     int itemsize                  # size of each element
     int flags                     # flags indicating how the data should be interpreted
-    c_python.Py_intptr_t *shape   # A length-nd array of shape information
-    c_python.Py_intptr_t *strides # A length-nd array of stride information
+    numpy.Py_intptr_t *shape   # A length-nd array of shape information
+    numpy.Py_intptr_t *strides # A length-nd array of stride information
     void *data                    # A pointer to the first element of the array
 
 cdef void free_array_struct( void* ptr, void *arr ):
     arrpy = <object>arr
-    c_python.Py_DECREF( arrpy )
+    cpython.ref.Py_DECREF( arrpy )
     c_lib.free(ptr)
 
 # comparision operators
@@ -233,9 +233,9 @@ cdef class FastImageBase:
         cdef c_lib.FILE* fd
         nbytes_tot = 0
         bytes_per_pixel = self.strides[1]
-        if not c_python.PyFile_Check(fobj):
+        if not c_python2.PyFile_Check(fobj):
             raise ValueError('need file object')
-        fd = c_python.PyFile_AsFile(fobj)
+        fd = c_python2.PyFile_AsFile(fobj)
         with nogil:
             for i from 0 <= i < self.imsiz.sz.height:
                 rowptr = self.im+i*self.step
@@ -265,8 +265,8 @@ cdef class FastImageBase:
             inter.strides = self.strides
             inter.shape = self.shape
             inter.data = self.im
-            c_python.Py_INCREF(self)
-            obj = c_python.PyCObject_FromVoidPtrAndDesc( <void*>inter, <void*>self, free_array_struct)
+            cpython.ref.Py_INCREF(self)
+            obj = cpython.cobject.PyCObject_FromVoidPtrAndDesc( <void*>inter, <void*>self, free_array_struct)
             return obj
 
     property __array_interface__:
@@ -788,10 +788,10 @@ def asfastimage( object arr ):
     global FASTIMAGEDEBUG
 
     attr = arr.__array_struct__
-    if not c_python.PyCObject_Check(attr):
+    if not cpython.cobject.PyCObject_Check(attr):
         raise ValueError("invalid __array_struct__")
 
-    inter = <PyArrayInterface*>c_python.PyCObject_AsVoidPtr(attr)
+    inter = <PyArrayInterface*>cpython.cobject.PyCObject_AsVoidPtr(attr)
     if inter.two != 2:
         raise ValueError("invalid __array_struct__")
 
@@ -838,10 +838,10 @@ def copy( object arr ):
     cdef int i
 
     attr = arr.__array_struct__
-    if not c_python.PyCObject_Check(attr):
+    if not cpython.cobject.PyCObject_Check(attr):
         raise ValueError("invalid __array_struct__")
 
-    inter = <PyArrayInterface*>c_python.PyCObject_AsVoidPtr(attr)
+    inter = <PyArrayInterface*>cpython.cobject.PyCObject_AsVoidPtr(attr)
     if inter.two != 2:
         raise ValueError("invalid __array_struct__")
 
