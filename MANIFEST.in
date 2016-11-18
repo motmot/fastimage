@@ -2,3 +2,4 @@ include LICENSE.txt
 include examples/*
 include src/*
 include stdeb.cfg
+include motmot/FastImage/*pxd

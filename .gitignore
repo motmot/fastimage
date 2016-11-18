@@ -5,4 +5,4 @@ motmot/FastImage/FastImage.so
 *~
 motmot.FastImage.egg-info/
 motmot.FastImage_ipp.egg-info
-src/FastImage.c
+motmot/FastImage/FastImage.c
