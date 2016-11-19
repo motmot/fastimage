@@ -24,5 +24,3 @@ FicStatus ficMomentInitAlloc_64f( ficMomentState_64f** );
 FicStatus ficMomentFree_64f( ficMomentState_64f* );
 
 const char* ficGetErrorString(FicStatus);
-
-FicStatus ficiFilterSobelVert_32f_C1R ( Fic32f *pSrc, int srcStep, Fic32f *pDst, int dstStep, FiciSize dstRoiSize );
