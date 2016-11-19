@@ -15,11 +15,6 @@
 #define IMPOS8u(im,step,bot,left) ((im)+((bot)*(step))+(left))
 #define IMPOS32f(im,step,bot,left) ((im)+((bot)*(step/4))+(left))
 
-/* backwards compatibility */
-#ifdef FASTIMAGE_USE_IPP_40
-#define ippGetStatusString ippCoreGetStatusString
-#endif
-
 void InitIPP() {
   if ( ippInit() < 0 ) {
     fprintf( stderr, "Can't init IPP libraries (%s, %d). Exiting.\n",__FILE__,__LINE__);
@@ -74,12 +69,3 @@ const int IsIPPStatic() {
   return 0;
 #endif
 }
-
-#if defined(__GNUC__)
-#if defined(_WIN32)
-int __security_cookie;
-void __fastcall __security_check_cookie(void *stackAddress){}
-
-long long _allmul( long long a, long long b) {return a*b;}
-#endif
-#endif
