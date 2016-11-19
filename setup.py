@@ -1,4 +1,5 @@
 import os, sys
+import numpy
 from setuptools import setup, find_packages, Extension
 from Cython.Build import cythonize
 
@@ -24,7 +25,7 @@ setup(name="motmot.FastImage",
       ext_modules=cythonize([Extension(name="motmot.FastImage.FastImage",
                                        sources=['motmot/FastImage/FastImage.pyx',
                                                 'src/fic.c','src/fic_sobel.c'],
-                                       include_dirs=vals['ipp_include_dirs']+['src'],
+                                       include_dirs=vals['ipp_include_dirs']+['src']+[numpy.get_include()],
                                        library_dirs=vals['ipp_library_dirs'],
                                        libraries=vals['ipp_libraries'],
                                        define_macros=vals['ipp_define_macros'],

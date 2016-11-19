@@ -6,10 +6,13 @@ cimport libc.stdlib
 cimport libc.stdio
 cimport libc.string
 import traceback, sys
+cimport numpy
 import numpy
 
 cdef int FASTIMAGEDEBUG
 FASTIMAGEDEBUG = 0
+
+numpy.import_array()
 
 # create char types that work in Pyrex and Cython
 cdef char CHAR_u
