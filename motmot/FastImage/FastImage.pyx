@@ -497,30 +497,6 @@ cdef class FastImage8u(FastImageBase):
             size.sz, &result ))
         return result
 
-    def sobel_horiz(self, Size size, FastImage8u dest=None):
-        cdef fic.FiciSize sz
-
-        sz.width = size.sz.width
-        sz.height = size.sz.height
-        if dest is None:
-            dest = FastImage8u( size )
-        else:
-            assert dest.size == size
-        CHK_FIC_HAVEGIL( fic.ficiFilterSobelHoriz_8u_C1R(<fic.Fic8u*>self.im, self.step, <fic.Fic8u*>dest.im, dest.step, sz ))
-        return dest
-
-    def sobel_vert(self, Size size, FastImage8u dest=None):
-        cdef fic.FiciSize sz
-
-        sz.width = size.sz.width
-        sz.height = size.sz.height
-        if dest is None:
-            dest = FastImage8u( size )
-        else:
-            assert dest.size == size
-        CHK_FIC_HAVEGIL( fic.ficiFilterSobelVert_8u_C1R(<fic.Fic8u*>self.im, self.step, <fic.Fic8u*>dest.im, dest.step, sz ))
-        return dest
-
 cdef class FastImage32f(FastImageBase):
 
     def __cinit__(self,*args,**kw):
@@ -728,18 +704,27 @@ cdef class FastImage32f(FastImageBase):
         return dest
 
     def sobel_horiz(self, Size size, FastImage32f dest=None):
-        cdef fic.FiciSize sz
         cdef int created_dest
+        cdef ipp.IppiMaskSize mask = ipp.ippMskSize3x3
+        cdef int borderTypei = <int>ipp.ippBorderRepl | <int>ipp.ippBorderInMemTop | <int>ipp.ippBorderInMemRight
+        cdef ipp.IppiBorderType borderType = <ipp.IppiBorderType>borderTypei
+        cdef ipp.Ipp32f borderValue = 0.0
+        cdef ipp.Ipp8u* pBuffer
+        cdef int bufferSize
 
         created_dest = 0
 
-        sz.width = size.sz.width
-        sz.height = size.sz.height
         if dest is None:
             dest = self.create_equal_shape_empty(size)
         else:
             assert dest.size == size
-        CHK_FIC_HAVEGIL( fic.ficiFilterSobelHoriz_32f_C1R(<fic.Fic32f*>self.im, self.step, <fic.Fic32f*>dest.im, dest.step, sz ))
+
+        CHK_HAVEGIL( ipp.ippiFilterSobelHorizBorderGetBufferSize(size.sz, mask, ipp.ipp32f, ipp.ipp32f, 1, &bufferSize) )
+        pBuffer = ipp.ippsMalloc_8u(bufferSize)
+        if pBuffer==NULL: raise MemoryError("Error allocating memory")
+        CHK_HAVEGIL( ipp.ippiFilterSobelHorizBorder_32f_C1R(<ipp.Ipp32f*>self.im, self.step, <ipp.Ipp32f*>dest.im, dest.step, size.sz,
+                                                            mask, borderType, borderValue, pBuffer))
+        ipp.ippsFree(pBuffer)
         return dest
 
     def sobel_vert(self, Size size, FastImage32f dest=None):
