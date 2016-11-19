@@ -107,7 +107,7 @@ FicStatus ficiFilterSobelVert_32f_C1R ( Fic32f *pSrc, int srcStep, Fic32f *pDst,
   if (dstStep != srcStep) {
     return ficStsShapeMismatch;
   }
-  sobel_h(pSrc, &w, &h, pDst);
+  sobel_v(pSrc, &w, &h, pDst);
   return ficStsNoErr;
 }
 
