@@ -489,15 +489,12 @@ cdef class FastImage8u(FastImageBase):
         return y,u,v
 
     def dot(self,FastImage8u other,Size size):
-        cdef fic.Fic64f result
-        cdef fic.FiciSize sz
+        cdef ipp.Ipp64f result
 
-        sz.width = size.sz.width
-        sz.height = size.sz.height
-        CHK_FIC_HAVEGIL( fic.ficiDotProd_8u64f_C1R(
-            <fic.Fic8u*>self.im,self.step,
-            <fic.Fic8u*>other.im,other.step,
-            sz, &result ))
+        CHK_HAVEGIL( ipp.ippiDotProd_8u64f_C1R(
+            <ipp.Ipp8u*>self.im,self.step,
+            <ipp.Ipp8u*>other.im,other.step,
+            size.sz, &result ))
         return result
 
     def sobel_horiz(self, Size size, FastImage8u dest=None):
@@ -710,15 +707,13 @@ cdef class FastImage32f(FastImageBase):
         return max_val, index_x, index_y
 
     def dot(self,FastImage32f other,Size size):
-        cdef fic.Fic64f result
-        cdef fic.FiciSize sz
+        cdef ipp.Ipp64f result
+        cdef ipp.IppHintAlgorithm algo = ipp.ippAlgHintAccurate
 
-        sz.width = size.sz.width
-        sz.height = size.sz.height
-        CHK_FIC_HAVEGIL( fic.ficiDotProd_32f64f_C1R(
-            <fic.Fic32f*>self.im,self.step,
-            <fic.Fic32f*>other.im,other.step,
-            sz, &result ))
+        CHK_HAVEGIL( ipp.ippiDotProd_32f64f_C1R(
+            <ipp.Ipp32f*>self.im,self.step,
+            <ipp.Ipp32f*>other.im,other.step,
+            size.sz, &result, algo ))
         return result
 
     cdef FastImage32f create_equal_shape_empty(self, Size size):
