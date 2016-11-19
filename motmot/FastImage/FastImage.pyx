@@ -225,26 +225,6 @@ cdef class FastImageBase:
         lines = '\n'.join(lines)
         return lines
 
-    def dump_to_file(self,fobj):
-        cdef int i
-        cdef int nbytes
-        cdef int nbytes_tot
-        cdef int bytes_per_pixel
-        cdef fiptr rowptr
-        cdef fiptr valptr
-        cdef libc.stdio.FILE* fd
-        nbytes_tot = 0
-        bytes_per_pixel = self.strides[1]
-        if not c_python2.PyFile_Check(fobj):
-            raise ValueError('need file object')
-        fd = c_python2.PyFile_AsFile(fobj)
-        with nogil:
-            for i from 0 <= i < self.imsiz.sz.height:
-                rowptr = self.im+i*self.step
-                nbytes = libc.stdio.fwrite( rowptr, 1, self.imsiz.sz.width*bytes_per_pixel, fd )
-                nbytes_tot = nbytes_tot+nbytes
-        return nbytes_tot
-
     property _step:
         def __get__(self):
             return self.step

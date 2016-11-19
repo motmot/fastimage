@@ -2,7 +2,6 @@
 
 cimport cpython.ref
 cimport cpython.cobject
-cimport c_python2
 cimport numpy
 cimport ipp
 cimport fic
