@@ -2,6 +2,7 @@ import os, sys
 import numpy
 from setuptools import setup, find_packages, Extension
 from Cython.Build import cythonize
+import cython_ipp
 
 # I need to import a module I'm about to install. How naughty is this?
 sys.path.insert(0, os.path.abspath(os.path.join('motmot','FastImage')))
