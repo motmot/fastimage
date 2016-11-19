@@ -1,13 +1,6 @@
 #emacs, this is -*-Python-*- mode
 
-# WARNING   WARNING   WARNING
-#
-# If you add any functions to this file, also add them to funclist.h.
-#
-# WARNING   WARNING   WARNING
-
-#cdef extern from "ippdefs.h":
-cdef extern from "fi_ipp.h" nogil:
+cdef extern from "ipp.h" nogil:
     ctypedef enum IppStatus:
         ippStsNotSupportedModeErr
         ippStsCpuNotSupportedErr

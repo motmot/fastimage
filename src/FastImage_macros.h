@@ -8,7 +8,7 @@
 
 /* misc IPP help */
 
-#include "fi_ipp.h"
+#include "ipp.h"
 
 #include <stdio.h>
 
