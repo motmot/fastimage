@@ -4,7 +4,6 @@ cimport cpython.ref
 cimport cpython.cobject
 cimport numpy
 cimport cython_ipp.ipp as ipp
-cimport fic
 
 ctypedef void* fiptr # pointer to FastImage base type
 

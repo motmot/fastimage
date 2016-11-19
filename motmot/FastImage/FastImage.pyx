@@ -87,17 +87,9 @@ class IppError(Exception):
         #Exception.__init__(self,"Error %d: %s"%(errval,cmsg))
         Exception.__init__(self,cmsg)
 
-class FicError(Exception):
-    pass
-
 cdef void CHK_HAVEGIL( ipp.IppStatus errval ) except *:
     if (errval!=0):
         raise IppError(errval)
-
-cdef void CHK_FIC_HAVEGIL( fic.FicStatus errval ) except *:
-    if (errval!=0):
-        errstr = fic.ficGetErrorString(errval)
-        raise FicError('error %d: %s'%(errval,errstr))
 
 ctypedef struct PyArrayInterface:
     int two                       # contains the integer 2 as a sanity check
