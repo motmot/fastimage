@@ -1,12 +1,4 @@
-************************************************
-:mod:`motmot.FastImage` -- SIMD image processing
-************************************************
-
-.. module:: motmot.FastImage.FastImage
-  :synopsis: SIMD image processing
-.. index::
-  module: FastImage
-  single: FastImage
+# motmot.FastImage -- SIMD image processing
 
 Description
 ===========
@@ -16,14 +8,14 @@ operate very quickly by using SIMD instructions. This is achieved by
 calling the Intel IPP library. A bridge to numpy is made through the
 `array interface`__.
 
-__ http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
+__ https://docs.scipy.org/doc/numpy/reference/arrays.interface.html
 
 Allocation of aligned memory
 ============================
 
 For the SIMD instructions to perform at maximal speed, images must be
 aligned on 32-byte boundaries. FastImage relies on the underlying
-image processing library to allocate the memory, trusting that it
+IPP library to allocate the memory, trusting that it
 knows best::
 
   import motmot.FastImage.FastImage as FastImage
