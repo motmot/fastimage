@@ -14,8 +14,6 @@ cdef extern from "fic.h" nogil:
 
     FicStatus ficiMaxIndx_8u_C1R( Fic8u*, int, FiciSize,
                                   Fic8u*, int*, int* )
-    FicStatus ficiMinIndx_8u_C1R( Fic8u*, int, FiciSize,
-                                  Fic8u*, int*, int* )
     FicStatus ficiMaxIndx_32f_C1R( Fic32f*, int, FiciSize,
                                    Fic32f*, int*, int* )
     FicStatus ficiMean_8u_C1R( Fic8u*, int, FiciSize, Fic64f*)
