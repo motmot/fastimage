@@ -407,6 +407,9 @@ cdef extern from "ipp.h" nogil:
                                        Ipp32s* pHist, Ipp32s* pLevels,
                                        int nLevels, Ipp32s lowerLevel, Ipp32s upperLevel)
 
+    IppStatus ippiMean_8u_C1R(Ipp8u* pSrc, int srcStep,
+                              IppiSize roiSize, Ipp64f* pMean)
+
 #cdef extern from "ippcv.h":
     IppStatus ippiAdd_8u32f_C1IR(Ipp8u*  pSrc, int srcStep,
                                  Ipp32f* pSrcDst, int srcDstStep,
