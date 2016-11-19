@@ -2,7 +2,9 @@
 
 # indexing starts from left, bottom
 
-cimport c_lib
+cimport libc.stdlib
+cimport libc.stdio
+cimport libc.string
 import traceback, sys
 import numpy
 
@@ -107,7 +109,7 @@ ctypedef struct PyArrayInterface:
 cdef void free_array_struct( void* ptr, void *arr ):
     arrpy = <object>arr
     cpython.ref.Py_DECREF( arrpy )
-    c_lib.free(ptr)
+    libc.stdlib.free(ptr)
 
 # comparision operators
 CmpLess = ipp.ippCmpLess
@@ -230,7 +232,7 @@ cdef class FastImageBase:
         cdef int bytes_per_pixel
         cdef fiptr rowptr
         cdef fiptr valptr
-        cdef c_lib.FILE* fd
+        cdef libc.stdio.FILE* fd
         nbytes_tot = 0
         bytes_per_pixel = self.strides[1]
         if not c_python2.PyFile_Check(fobj):
@@ -239,7 +241,7 @@ cdef class FastImageBase:
         with nogil:
             for i from 0 <= i < self.imsiz.sz.height:
                 rowptr = self.im+i*self.step
-                nbytes = c_lib.fwrite( rowptr, 1, self.imsiz.sz.width*bytes_per_pixel, fd )
+                nbytes = libc.stdio.fwrite( rowptr, 1, self.imsiz.sz.width*bytes_per_pixel, fd )
                 nbytes_tot = nbytes_tot+nbytes
         return nbytes_tot
 
@@ -251,7 +253,7 @@ cdef class FastImageBase:
         def __get__(self):
             cdef PyArrayInterface* inter
 
-            inter = <PyArrayInterface*>c_lib.malloc( sizeof( PyArrayInterface ) )
+            inter = <PyArrayInterface*>libc.stdlib.malloc( sizeof( PyArrayInterface ) )
             inter.two = 2
             inter.nd = 2
             if self.basetype == '8u':
@@ -868,8 +870,8 @@ def copy( object arr ):
 
     # TODO: make sure that we can rely on blocks like this:
     for i from 0 <= i < inter.shape[0]:
-        c_lib.memcpy( result.im + i*result.step,
-                      inter.data + i*inter.strides[0],
-                      inter.shape[1]*result.strides[1] )
+        libc.string.memcpy( result.im + i*result.step,
+                            inter.data + i*inter.strides[0],
+                            inter.shape[1]*result.strides[1] )
 
     return result
