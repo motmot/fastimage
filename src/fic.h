@@ -25,12 +25,6 @@ FicStatus ficMomentFree_64f( ficMomentState_64f* );
 
 const char* ficGetErrorString(FicStatus);
 
-FicStatus ficiMaxIndx_8u_C1R(const Fic8u* pSrc, const int srcStep,
-                             const FiciSize roiSize, Fic8u* val,
-                             int* x, int*y);
-FicStatus ficiMaxIndx_32f_C1R(const Fic32f* pSrc, const int srcStep,
-                              const FiciSize roiSize, Fic32f* val,
-                              int* x, int*y);
 FicStatus ficiDotProd_8u64f_C1R(const Fic8u* pSrc1, const int src1Step,
                                 const Fic8u* pSrc2, const int src2Step,
                                 const FiciSize roiSize, Fic64f* result);

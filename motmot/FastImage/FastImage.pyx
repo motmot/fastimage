@@ -469,18 +469,15 @@ cdef class FastImage8u(FastImageBase):
         return min_val, index_x, index_y
 
     def max_index(self, Size size):
-        cdef fic.FicStatus sts
+        cdef ipp.IppStatus sts
         cdef int index_x, index_y
         cdef ipp.Ipp8u max_val
-        cdef fic.FiciSize sz
 
-        sz.width = size.sz.width
-        sz.height = size.sz.height
         with nogil:
-            sts = fic.ficiMaxIndx_8u_C1R(
-                <fic.Fic8u*>self.im,self.step,
-                 sz, &max_val, &index_x, &index_y)
-        CHK_FIC_HAVEGIL(sts)
+            sts = ipp.ippiMaxIndx_8u_C1R(
+                <ipp.Ipp8u*>self.im, self.step,
+                 size.sz, &max_val, &index_x, &index_y)
+        CHK_HAVEGIL(sts)
         return max_val, index_x, index_y
 
     def to_yuv422(self):
@@ -701,18 +698,15 @@ cdef class FastImage32f(FastImageBase):
         return xself
 
     def max_index(self, Size size):
-        cdef fic.FicStatus sts
+        cdef ipp.IppStatus sts
         cdef int index_x, index_y
         cdef ipp.Ipp32f max_val
-        cdef fic.FiciSize sz
 
-        sz.width = size.sz.width
-        sz.height = size.sz.height
         with nogil:
-            sts = fic.ficiMaxIndx_32f_C1R(
-                <fic.Fic32f*>self.im,self.step,
-                 sz, &max_val, &index_x, &index_y)
-        CHK_FIC_HAVEGIL(sts)
+            sts = ipp.ippiMaxIndx_32f_C1R(
+                <ipp.Ipp32f*>self.im, self.step,
+                 size.sz, &max_val, &index_x, &index_y)
+        CHK_HAVEGIL(sts)
         return max_val, index_x, index_y
 
     def dot(self,FastImage32f other,Size size):
