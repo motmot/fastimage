@@ -90,6 +90,20 @@ class TestFastImageBase(unittest.TestCase):
             imB.set_val(2,size)
             self.assert_( not np.allclose(np.asarray(imA),np.asarray(imB)) )
 
+            # check that views work
+            imA.set_val(0,size)
+            arrA1 = np.array(imA,copy=False)
+            arrA2 = np.array(imA,copy=False)
+            arrA1[2,5] = 12
+            assert(np.allclose(arrA1,arrA2))
+
+            # check that copy isn't view
+            imA.set_val(0,size)
+            arrA1 = np.array(imA,copy=True)
+            arrA2 = np.array(imA,copy=True)
+            arrA1[2,5] = 12
+            assert(not np.allclose(arrA1,arrA2))
+
 class TestFastImage8u(unittest.TestCase):
 
     def test_32f_copy(self):
